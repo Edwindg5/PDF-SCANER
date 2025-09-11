@@ -36,7 +36,7 @@ class ReporteAnalisisSuelo(BaseModel):
     arena: Optional[str] = Field(None, description="Porcentaje de arena")
     textura: Optional[str] = Field(None, description="Tipo de textura del suelo")
     porcentaje_saturacion: Optional[str] = Field(None, description="Porcentaje de saturación")
-    densidad_aparente: Optional[str] = Field(None, description="Densidad aparente en t m⁻³")
+    densidad_aparente_DAP: Optional[str] = Field(None, description="Densidad aparente(DAP) en t m⁻³")
     
     # Parámetros químicos
     ph_agua_suelo: Optional[str] = Field(None, description="pH en relación 2:1 agua suelo")

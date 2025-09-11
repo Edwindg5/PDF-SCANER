@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesador de PDF</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #495057;
+        }
+        #upload-form {
+            border: 1px solid #dee2e6;
+            padding: 25px;
+            border-radius: 4px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 4px;
+            display: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .success {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+        .error {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+        button {
+            padding: 10px 16px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #004494;
+        }
+        button:disabled {
+            background-color: #a1c4e6;
+            cursor: not-allowed;
+        }
+        .limits-info {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        
+        .info-badge {
+            display: inline-block;
+            background-color: #e7f3ff;
+            border: 1px solid #b8daff;
+            color: #0056b3;
+            border-radius: 3px;
+            padding: 3px 8px;
+            font-size: 12px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        
+        .info-text {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 10px;
+        }
+        
+        /* Estilos para el loader empresarial */
+        .processing-container {
+            display: none;
+            margin: 30px auto;
+            padding: 25px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .processing-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .processing-icon {
+            width: 36px;
+            height: 36px;
+            margin-right: 15px;
+        }
+        
+        .processing-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .processing-subtitle {
+            color: #5d6778;
+            margin: 8px 0 20px 0;
+            font-size: 14px;
+        }
+        
+        .progress-container {
+            margin-bottom: 25px;
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #0056b3, #428bca);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+        
+        .progress-status {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .steps-container {
+            margin-top: 20px;
+        }
+        
+        .step-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            color: #6c757d;
+        }
+        
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .step-text {
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        
+        .step-status {
+            margin-left: auto;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* Estado activo */
+        .step-item.active .step-number {
+            background-color: #e3f2fd;
+            color: #0056b3;
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.2);
+        }
+        
+        .step-item.active .step-text {
+            color: #212529;
+            font-weight: 500;
+        }
+        
+        .step-item.active .step-status {
+            color: #0056b3;
+        }
+        
+        /* Estado completado */
+        .step-item.completed .step-number {
+            background-color: #0056b3;
+            color: white;
+        }
+        
+        .step-item.completed .step-text {
+            color: #212529;
+        }
+        
+        .step-item.completed .step-status {
+            color: #28a745;
+        }
+        
+        .estimation-text {
+            text-align: center;
+            margin-top: 15px;
+            color: #6c757d;
+            font-size: 13px;
+            font-style: italic;
+        }
+        
+        /* Animación para el pulso de procesamiento */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.4); }
+            70% { box-shadow: 0 0 0 8px rgba(0, 86, 179, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 86, 179, 0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <h1>Procesador de PDF</h1>
+    
+    <div id="upload-form">
+        <div class="form-group">
+            <label for="pdf-file">Seleccione un archivo PDF para procesar:</label>
+            <input type="file" id="pdf-file" accept=".pdf" />
+        </div>
+        <button id="upload-button">Iniciar procesamiento</button>
+        <div class="limits-info">
+            <p><strong>Nota:</strong> El sistema admite archivos PDF con un máximo de 30 páginas.</p>
+            <p class="info-text">La aplicación gestiona automáticamente el almacenamiento y elimina archivos no utilizados después de 3 días. <span class="info-badge">Limpieza automática</span></p>
+        </div>
+    </div>
+    
+    <div id="processing-container" class="processing-container">
+        <div class="processing-header">
+            <svg class="processing-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#0056b3">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h2 class="processing-title">Procesando documento</h2>
+        </div>
+        
+        <p class="processing-subtitle" id="processing-message">Analizando contenido del PDF...</p>
+        
+        <div class="progress-container">
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="progress-status">
+                <span>Iniciado</span>
+                <span id="progress-percentage">0%</span>
+                <span>Finalizado</span>
+            </div>
+        </div>
+        
+        <div class="steps-container">
+            <div class="step-item" id="step1">
+                <div class="step-number" id="step1-number">1</div>
+                <span class="step-text">Validación del documento</span>
+                <span class="step-status" id="step1-status">Pendiente</span>
+            </div>
+            <div class="step-item" id="step2">
+                <div class="step-number" id="step2-number">2</div>
+                <span class="step-text">Extracción de datos</span>
+                <span class="step-status" id="step2-status">Pendiente</span>
+            </div>
+            <div class="step-item" id="step3">
+                <div class="step-number" id="step3-number">3</div>
+                <span class="step-text">Procesamiento de información</span>
+                <span class="step-status" id="step3-status">Pendiente</span>
+            </div>
+            <div class="step-item" id="step4">
+                <div class="step-number" id="step4-number">4</div>
+                <span class="step-text">Generación de resultados</span>
+                <span class="step-status" id="step4-status">Pendiente</span>
+            </div>
+        </div>
+        
+        <p class="estimation-text" id="estimation-text">Tiempo estimado: calculando...</p>
+    </div>
+    
+    <div id="result"></div>
+    
+    <script>
+        document.getElementById('upload-button').addEventListener('click', async () => {
+            const fileInput = document.getElementById('pdf-file');
+            const resultDiv = document.getElementById('result');
+            const processingContainer = document.getElementById('processing-container');
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercentage = document.getElementById('progress-percentage');
+            const processingMessage = document.getElementById('processing-message');
+            const estimationText = document.getElementById('estimation-text');
+            const uploadButton = document.getElementById('upload-button');
+            const uploadForm = document.getElementById('upload-form');
+            
+            if (!fileInput.files.length) {
+                resultDiv.innerHTML = '<p>Por favor, seleccione un archivo PDF para procesar.</p>';
+                resultDiv.className = 'error';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            // Ocultar formulario y resultados anteriores, mostrar procesamiento
+            uploadForm.style.opacity = '0.5';
+            uploadForm.style.pointerEvents = 'none';
+            resultDiv.style.display = 'none';
+            processingContainer.style.display = 'block';
+            uploadButton.disabled = true;
+            
+            // Mensajes de procesamiento más profesionales
+            const processingMessages = [
+                "Analizando estructura del documento...",
+                "Validando contenido del PDF...",
+                "Extrayendo información relevante...",
+                "Procesando datos estructurados...",
+                "Organizando información extraída...",
+                "Preparando formato de salida...",
+                "Estructurando datos para Excel...",
+                "Finalizando proceso de conversión..."
+            ];
+            
+            // Estimaciones de tiempo más profesionales
+            const estimations = [
+                "Tiempo estimado: calculando...",
+                "Tiempo estimado: 45-60 segundos",
+                "Tiempo estimado: 30-45 segundos",
+                "Tiempo estimado: 15-30 segundos",
+                "Finalizando proceso...",
+                "Completando en breve..."
+            ];
+            
+            // Iniciar simulación de progreso
+            let progress = 0;
+            let messageIndex = 0;
+            let estimationIndex = 0;
+            
+            // Activar primer paso
+            updateStepStatus('step1', 'active', 'En proceso');
+            
+            const progressInterval = setInterval(() => {
+                // Incrementar progreso de manera realista
+                if (progress < 20) {
+                    progress += 0.5;
+                } else if (progress < 50) {
+                    progress += 0.8;
+                } else if (progress < 80) {
+                    progress += 0.6;
+                } else if (progress < 95) {
+                    progress += 0.3;
+                }
+                
+                // Actualizar UI
+                progressBar.style.width = `${progress}%`;
+                progressPercentage.textContent = `${Math.round(progress)}%`;
+                
+                // Actualizar mensajes y estimaciones periódicamente
+                if (Math.round(progress) % 12 === 0) {
+                    messageIndex = (messageIndex + 1) % processingMessages.length;
+                    processingMessage.textContent = processingMessages[messageIndex];
+                }
+                
+                if (Math.round(progress) % 20 === 0) {
+                    estimationIndex = Math.min(estimationIndex + 1, estimations.length - 1);
+                    estimationText.textContent = estimations[estimationIndex];
+                }
+                
+                // Actualizar pasos según el progreso
+                if (progress >= 25 && document.getElementById('step1').className === 'step-item active') {
+                    updateStepStatus('step1', 'completed', 'Completado');
+                    updateStepStatus('step2', 'active', 'En proceso');
+                }
+                
+                if (progress >= 50 && document.getElementById('step2').className === 'step-item active') {
+                    updateStepStatus('step2', 'completed', 'Completado');
+                    updateStepStatus('step3', 'active', 'En proceso');
+                }
+                
+                if (progress >= 75 && document.getElementById('step3').className === 'step-item active') {
+                    updateStepStatus('step3', 'completed', 'Completado');
+                    updateStepStatus('step4', 'active', 'En proceso');
+                }
+            }, 100);
+            
+            try {
+                const response = await fetch('/api/procesar-pdf', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // Asegurar que la barra de progreso alcanza al menos el 95% antes de completar
+                const ensureProgress = () => {
+                    if (progress < 95) {
+                        progress = 95;
+                        progressBar.style.width = `${progress}%`;
+                        progressPercentage.textContent = `${Math.round(progress)}%`;
+                        setTimeout(finalizeProgress, 800);
+                    } else {
+                        finalizeProgress();
+                    }
+                };
+                
+                // Completar la barra de progreso y mostrar el resultado
+                const finalizeProgress = async () => {
+                    clearInterval(progressInterval);
+                    
+                    // Completar todos los pasos
+                    updateStepStatus('step4', 'completed', 'Completado');
+                    
+                    // Finalizar la barra de progreso
+                    progress = 100;
+                    progressBar.style.width = '100%';
+                    progressPercentage.textContent = '100%';
+                    processingMessage.textContent = "Procesamiento completado";
+                    estimationText.textContent = "Redirigiendo a resultados...";
+                    
+                    // Esperar datos y mostrar resultado
+                    const data = await response.json();
+                    
+                    // Pequeña pausa para mostrar el 100% antes de continuar
+                    setTimeout(() => {
+                        processingContainer.style.display = 'none';
+                        uploadForm.style.opacity = '1';
+                        uploadForm.style.pointerEvents = 'auto';
+                        uploadButton.disabled = false;
+                        
+                        if (response.ok) {
+                            resultDiv.innerHTML = `
+                                <p>${data.mensaje}</p>
+                                <p>Redirigiendo a la visualización de resultados...</p>
+                            `;
+                            resultDiv.className = 'success';
+                            resultDiv.style.display = 'block';
+                            
+                            // Redirigir a la página de resultados
+                            if (data.redirect_url) {
+                                setTimeout(() => {
+                                    window.location.href = data.redirect_url;
+                                }, 1500);
+                            }
+                        } else {
+                            // Mostrar error
+                            if (data.paginas) {
+                                resultDiv.innerHTML = `
+                                    <p>${data.error}</p>
+                                    <p>El documento contiene ${data.paginas} páginas, excediendo el límite de 30 páginas.</p>
+                                `;
+                            } else {
+                                resultDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                            }
+                            resultDiv.className = 'error';
+                            resultDiv.style.display = 'block';
+                        }
+                    }, 1000);
+                };
+                
+                ensureProgress();
+                
+            } catch (error) {
+                // Manejo de errores
+                clearInterval(progressInterval);
+                processingContainer.style.display = 'none';
+                uploadForm.style.opacity = '1';
+                uploadForm.style.pointerEvents = 'auto';
+                uploadButton.disabled = false;
+                
+                resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+                resultDiv.className = 'error';
+                resultDiv.style.display = 'block';
+            }
+        });
+        
+        // Función para actualizar el estado de los pasos
+        function updateStepStatus(stepId, status, statusText) {
+            const step = document.getElementById(stepId);
+            const stepStatus = document.getElementById(`${stepId}-status`);
+            const stepNumber = document.getElementById(`${stepId}-number`);
+            
+            // Eliminar clases actuales
+            step.className = 'step-item';
+            
+            // Aplicar nueva clase
+            step.classList.add(status);
+            
+            // Actualizar texto de estado
+            stepStatus.textContent = statusText;
+            
+            // Aplicar animación si está en proceso
+            if (status === 'active') {
+                stepNumber.classList.add('pulse');
+            } else {
+                stepNumber.classList.remove('pulse');
+            }
+            
+            // Cambiar el número por un check si está completado
+            if (status === 'completed') {
+                stepNumber.innerHTML = '✓';
+            }
+        }
+    </script>
+</body>
+</html>

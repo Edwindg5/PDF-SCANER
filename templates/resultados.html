@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados del Análisis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .actions {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        .filters {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        .filter-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        label {
+            min-width: 100px;
+        }
+        select, input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex-grow: 1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            position: sticky;
+            top: 0;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .pagination button {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .pagination button.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        .pagination button:hover:not(.active) {
+            background-color: #f1f1f1;
+        }
+        .filter-status {
+            font-style: italic;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        #downloadFilteredBtn {
+            display: none; /* Inicialmente oculto */
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.3);
+            border-radius: 50%;
+            border-top-color: #3498db;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resultados del Análisis</h1>
+        
+        <div class="actions">
+            <a href="/" class="btn btn-secondary">Volver al inicio</a>
+            <a href="/api/descargar-excel/{{ nombre_archivo }}" class="btn btn-primary">Descargar Excel Completo</a>
+            <button id="downloadFilteredBtn" class="btn btn-warning">Descargar Datos Filtrados</button>
+            <button id="toggleFilters" class="btn btn-success">Mostrar/Ocultar Filtros</button>
+        </div>
+        
+        <div class="filters" id="filterSection">
+            <h3>Filtros</h3>
+            <div class="filter-row">
+                <label for="columnSelect">Columna:</label>
+                <select id="columnSelect">
+                    <option value="">Selecciona una columna</option>
+                    {% for columna in columnas %}
+                    <option value="{{ columna }}">{{ columna }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-row">
+                <label for="filterValue">Valor:</label>
+                <input type="text" id="filterValue" placeholder="Valor a filtrar">
+            </div>
+            <div class="filter-row">
+                <button id="applyFilter" class="btn btn-primary">Aplicar Filtro</button>
+                <button id="clearFilter" class="btn btn-secondary">Limpiar Filtros</button>
+            </div>
+        </div>
+        
+        <div id="filterStatus" class="filter-status"></div>
+        
+        <div class="table-container">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        {% for columna in columnas %}
+                        <th>{{ columna }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in datos %}
+                    <tr>
+                        {% for columna in columnas %}
+                        <td>{{ fila[columna] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="pagination" id="pagination"></div>
+    </div>
+    
+    <script>
+        // Datos iniciales desde el backend
+        const datosIniciales = {{ datos|tojson }};
+        let datosFiltrados = [...datosIniciales];
+        const columnas = {{ columnas|tojson }};
+        
+        // Configuración de paginación
+        const itemsPorPagina = 10;
+        let paginaActual = 1;
+        let filtroAplicado = false;
+        
+        // Elementos DOM
+        const tablaResultados = document.getElementById('resultsTable');
+        const paginacionDiv = document.getElementById('pagination');
+        const toggleFiltrosBtn = document.getElementById('toggleFilters');
+        const seccionFiltros = document.getElementById('filterSection');
+        const selectColumna = document.getElementById('columnSelect');
+        const inputValor = document.getElementById('filterValue');
+        const btnAplicarFiltro = document.getElementById('applyFilter');
+        const btnLimpiarFiltro = document.getElementById('clearFilter');
+        const btnDescargarFiltrados = document.getElementById('downloadFilteredBtn');
+        const filtroStatus = document.getElementById('filterStatus');
+        
+        // Función para actualizar la tabla con los datos filtrados
+        function actualizarTabla() {
+            // Calcular el índice inicial y final para la paginación
+            const inicio = (paginaActual - 1) * itemsPorPagina;
+            const fin = inicio + itemsPorPagina;
+            const datosActuales = datosFiltrados.slice(inicio, fin);
+            
+            // Limpiar la tabla
+            const tbody = tablaResultados.querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            // Rellenar con nuevos datos
+            datosActuales.forEach(fila => {
+                const tr = document.createElement('tr');
+                columnas.forEach(columna => {
+                    const td = document.createElement('td');
+                    td.textContent = fila[columna] !== undefined ? fila[columna] : '';
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            
+            // Actualizar la paginación
+            actualizarPaginacion();
+            
+            // Actualizar estado de filtros
+            actualizarEstadoFiltros();
+        }
+        
+        // Función para actualizar el estado de los filtros
+        function actualizarEstadoFiltros() {
+            if (filtroAplicado) {
+                filtroStatus.textContent = `Mostrando ${datosFiltrados.length} de ${datosIniciales.length} registros`;
+                btnDescargarFiltrados.style.display = 'inline-block';
+            } else {
+                filtroStatus.textContent = '';
+                btnDescargarFiltrados.style.display = 'none';
+            }
+        }
+        
+        // Función para actualizar los controles de paginación
+        function actualizarPaginacion() {
+            const totalPaginas = Math.ceil(datosFiltrados.length / itemsPorPagina);
+            paginacionDiv.innerHTML = '';
+            
+            // Si hay menos de 2 páginas, no mostramos la paginación
+            if (totalPaginas <= 1) return;
+            
+            // Botón anterior
+            const btnAnterior = document.createElement('button');
+            btnAnterior.textContent = '<<';
+            btnAnterior.disabled = paginaActual === 1;
+            btnAnterior.addEventListener('click', () => {
+                if (paginaActual > 1) {
+                    paginaActual--;
+                    actualizarTabla();
+                }
+            });
+            paginacionDiv.appendChild(btnAnterior);
+            
+            // Determinar rango de páginas a mostrar
+            let startPage = Math.max(1, paginaActual - 2);
+            let endPage = Math.min(totalPaginas, paginaActual + 2);
+            
+            // Asegurar que siempre se muestren 5 botones si hay suficientes páginas
+            if (endPage - startPage < 4 && totalPaginas > 5) {
+                if (paginaActual < 3) {
+                    endPage = Math.min(5, totalPaginas);
+                } else if (paginaActual > totalPaginas - 2) {
+                    startPage = Math.max(1, totalPaginas - 4);
+                }
+            }
+            
+            // Botón para la primera página si es necesario
+            if (startPage > 1) {
+                const btnPrimera = document.createElement('button');
+                btnPrimera.textContent = '1';
+                btnPrimera.addEventListener('click', () => {
+                    paginaActual = 1;
+                    actualizarTabla();
+                });
+                paginacionDiv.appendChild(btnPrimera);
+                
+                if (startPage > 2) {
+                    const puntos = document.createElement('span');
+                    puntos.textContent = '...';
+                    puntos.style.margin = '0 5px';
+                    paginacionDiv.appendChild(puntos);
+                }
+            }
+            
+            // Botones de páginas
+            for (let i = startPage; i <= endPage; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i;
+                btn.classList.toggle('active', i === paginaActual);
+                btn.addEventListener('click', () => {
+                    paginaActual = i;
+                    actualizarTabla();
+                });
+                paginacionDiv.appendChild(btn);
+            }
+            
+            // Botón para la última página si es necesario
+            if (endPage < totalPaginas) {
+                if (endPage < totalPaginas - 1) {
+                    const puntos = document.createElement('span');
+                    puntos.textContent = '...';
+                    puntos.style.margin = '0 5px';
+                    paginacionDiv.appendChild(puntos);
+                }
+                
+                const btnUltima = document.createElement('button');
+                btnUltima.textContent = totalPaginas;
+                btnUltima.addEventListener('click', () => {
+                    paginaActual = totalPaginas;
+                    actualizarTabla();
+                });
+                paginacionDiv.appendChild(btnUltima);
+            }
+            
+            // Botón siguiente
+            const btnSiguiente = document.createElement('button');
+            btnSiguiente.textContent = '>>';
+            btnSiguiente.disabled = paginaActual === totalPaginas;
+            btnSiguiente.addEventListener('click', () => {
+                if (paginaActual < totalPaginas) {
+                    paginaActual++;
+                    actualizarTabla();
+                }
+            });
+            paginacionDiv.appendChild(btnSiguiente);
+        }
+        
+        // Aplicar filtro
+        btnAplicarFiltro.addEventListener('click', () => {
+            const columna = selectColumna.value;
+            const valor = inputValor.value.toLowerCase();
+            
+            if (columna && valor) {
+                datosFiltrados = datosIniciales.filter(fila => {
+                    const valorCelda = String(fila[columna] || '').toLowerCase();
+                    return valorCelda.includes(valor);
+                });
+                filtroAplicado = true;
+            } else if (columna) {
+                // Si solo hay columna seleccionada, mostrar todos los datos de esa columna
+                datosFiltrados = [...datosIniciales];
+                filtroAplicado = false;
+            }
+            
+            // Reiniciar a la primera página y actualizar
+            paginaActual = 1;
+            actualizarTabla();
+        });
+        
+        // Limpiar filtros
+        btnLimpiarFiltro.addEventListener('click', () => {
+            selectColumna.value = '';
+            inputValor.value = '';
+            datosFiltrados = [...datosIniciales];
+            filtroAplicado = false;
+            paginaActual = 1;
+            actualizarTabla();
+        });
+        
+        // Mostrar/ocultar sección de filtros
+        toggleFiltrosBtn.addEventListener('click', () => {
+            seccionFiltros.classList.toggle('hidden');
+        });
+        
+        // Descargar datos filtrados
+        btnDescargarFiltrados.addEventListener('click', async () => {
+            // Mostrar indicador de carga
+            const loadingIndicator = document.createElement('span');
+            loadingIndicator.className = 'loading';
+            btnDescargarFiltrados.appendChild(loadingIndicator);
+            btnDescargarFiltrados.disabled = true;
+            
+            try {
+                // Enviar los datos filtrados al servidor
+                const response = await fetch('/api/descargar-filtrado', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        datos_filtrados: datosFiltrados
+                    }),
+                });
+                
+                if (response.ok) {
+                    // Convertir la respuesta a blob
+                    const blob = await response.blob();
+                    
+                    // Crear un enlace de descarga
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = 'datos_filtrados.xlsx';
+                    
+                    // Añadir al DOM, hacer clic y limpiar
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.error}`);
+                }
+            } catch (error) {
+                console.error('Error al descargar datos filtrados:', error);
+                alert('Error al descargar los datos filtrados');
+            } finally {
+                // Quitar indicador de carga
+                btnDescargarFiltrados.removeChild(loadingIndicator);
+                btnDescargarFiltrados.disabled = false;
+            }
+        });
+        
+        // Activar filtro al presionar Enter en el campo de valor
+        inputValor.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                btnAplicarFiltro.click();
+            }
+        });
+        
+        // Inicializar la tabla
+        actualizarTabla();
+    </script>
+</body>
+</html>
