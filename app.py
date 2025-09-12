@@ -1,3 +1,4 @@
+# scanner/app.py
 from flask import Flask, render_template
 from routes.pdf_routes import pdf_bp
 from controllers.pdf_controller import mostrar_vista_principal_controller, limpiar_archivos_antiguos
@@ -19,7 +20,7 @@ def limpieza_periodica():
     while True:
         try:
             # Dormir durante 12 horas
-            time.sleep(12 * 60 * 60)
+            time.sleep(10 * 60)
             # Ejecutar limpieza
             limpiar_archivos_antiguos()
         except Exception as e:

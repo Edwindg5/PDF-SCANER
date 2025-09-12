@@ -1,3 +1,4 @@
+# scanner/routes/pdf_routes.py
 from flask import Blueprint
 from controllers.pdf_controller import (
     procesar_pdf_controller,

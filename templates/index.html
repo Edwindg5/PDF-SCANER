@@ -1,3 +1,4 @@
+//scanner/templates/index.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -250,8 +251,8 @@
         </div>
         <button id="upload-button">Iniciar procesamiento</button>
         <div class="limits-info">
-            <p><strong>Nota:</strong> El sistema admite archivos PDF con un máximo de 30 páginas.</p>
-            <p class="info-text">La aplicación gestiona automáticamente el almacenamiento y elimina archivos no utilizados después de 3 días. <span class="info-badge">Limpieza automática</span></p>
+            <p><strong>Nota:</strong> El sistema admite archivos PDF con un máximo de 60 páginas.</p>
+            <p class="info-text">La aplicación gestiona automáticamente el almacenamiento y elimina archivos no utilizados después de 10 minutos. <span class="info-badge">Limpieza automática</span></p>
         </div>
     </div>
     
@@ -469,7 +470,7 @@
                             if (data.paginas) {
                                 resultDiv.innerHTML = `
                                     <p>${data.error}</p>
-                                    <p>El documento contiene ${data.paginas} páginas, excediendo el límite de 30 páginas.</p>
+                                    <p>El documento contiene ${data.paginas} páginas, excediendo el límite de 60 páginas.</p>
                                 `;
                             } else {
                                 resultDiv.innerHTML = `<p>Error: ${data.error}</p>`;

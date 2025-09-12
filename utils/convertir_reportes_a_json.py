@@ -1,3 +1,4 @@
+#scanner/ utils/convertir_reportes_a_json.py
 import json
 
 def convertir_reportes_a_json(reportes, como_json=True):

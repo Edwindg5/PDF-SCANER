@@ -1,3 +1,4 @@
+#scanner/ utils/exportar_dict_a_excel.py
 import pandas as pd
 
 def exportar_dict_a_excel(datos, nombre_archivo="reportes.xlsx"):

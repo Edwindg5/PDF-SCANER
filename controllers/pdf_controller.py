@@ -1,7 +1,8 @@
+# scanner/controllers/pdf_controller.py
 from pathlib import Path
 from flask import request, jsonify, render_template, send_file, redirect, url_for, make_response
 from pydantic_ai import BinaryContent
-from agent import agent
+from agent.multi_account_agent import multi_agent  # Cambiar esta línea
 from utils import convertir_reportes_a_json, exportar_dict_a_excel
 import os
 import tempfile
@@ -16,11 +17,24 @@ import re
 
 # Directorio donde se guardan los archivos generados
 ARCHIVOS_DIR = os.path.join(os.getcwd(), "archivos_generados")
-# Tiempo de caducidad en segundos (3 días)
-TIEMPO_CADUCIDAD = 3 * 24 * 60 * 60  
+# Tiempo de caducidad en segundos (20 minutos)
+TIEMPO_CADUCIDAD = 20 * 60
 
-# Crear el directorio si no existe
-os.makedirs(ARCHIVOS_DIR, exist_ok=True)
+def crear_directorio_archivos():
+    """
+    Crea el directorio de archivos si no existe
+    """
+    try:
+        if not os.path.exists(ARCHIVOS_DIR):
+            os.makedirs(ARCHIVOS_DIR, exist_ok=True)
+            print(f"Directorio creado: {ARCHIVOS_DIR}")
+        return True
+    except Exception as e:
+        print(f"Error al crear directorio {ARCHIVOS_DIR}: {str(e)}")
+        return False
+
+# Crear el directorio si no existe al cargar el módulo
+crear_directorio_archivos()
 
 def mostrar_vista_principal_controller():
     """
@@ -30,8 +44,12 @@ def mostrar_vista_principal_controller():
 
 def limpiar_archivos_antiguos():
     """
-    Elimina archivos generados que no se han utilizado en el tiempo de caducidad
+    Elimina archivos generados que no se han utilizado en el tiempo de caducidad (20 minutos)
+    y elimina la carpeta si está vacía
     """
+    if not os.path.exists(ARCHIVOS_DIR):
+        return 0
+    
     tiempo_actual = time.time()
     contador_eliminados = 0
     
@@ -44,13 +62,21 @@ def limpiar_archivos_antiguos():
             # Obtener el tiempo de última modificación
             tiempo_modificacion = os.path.getmtime(ruta_archivo)
             
-            # Si el archivo es más antiguo que el tiempo de caducidad, eliminarlo
+            # Si el archivo es más antiguo que 20 minutos, eliminarlo
             if tiempo_actual - tiempo_modificacion > TIEMPO_CADUCIDAD:
                 try:
                     os.remove(ruta_archivo)
                     contador_eliminados += 1
                 except Exception as e:
                     print(f"Error al eliminar {ruta_archivo}: {str(e)}")
+    
+    # Intentar eliminar la carpeta si está vacía
+    try:
+        if os.path.exists(ARCHIVOS_DIR) and not os.listdir(ARCHIVOS_DIR):
+            os.rmdir(ARCHIVOS_DIR)
+            print("Carpeta archivos_generados eliminada (estaba vacía)")
+    except Exception as e:
+        print(f"Error al eliminar carpeta: {str(e)}")
     
     print(f"Limpieza automática completada: {contador_eliminados} archivos eliminados")
     return contador_eliminados
@@ -60,29 +86,40 @@ def verificar_espacio_disponible():
     Verifica si hay suficiente espacio disponible en el directorio de archivos
     Si el directorio supera 1GB, elimina los archivos más antiguos
     """
+    # Crear el directorio si no existe
+    if not crear_directorio_archivos():
+        return False
+        
     limite_tamano = 1 * 1024 * 1024 * 1024  # 1GB en bytes
-    tamano_total = sum(os.path.getsize(os.path.join(ARCHIVOS_DIR, f)) for f in os.listdir(ARCHIVOS_DIR) 
-                       if os.path.isfile(os.path.join(ARCHIVOS_DIR, f)))
     
-    if tamano_total > limite_tamano:
-        print(f"Directorio excede el límite de tamaño ({tamano_total} bytes). Limpiando archivos más antiguos...")
+    try:
+        tamano_total = sum(os.path.getsize(os.path.join(ARCHIVOS_DIR, f)) for f in os.listdir(ARCHIVOS_DIR) 
+                           if os.path.isfile(os.path.join(ARCHIVOS_DIR, f)))
         
-        # Obtener lista de archivos ordenados por tiempo de modificación (más antiguos primero)
-        archivos = [(f, os.path.getmtime(os.path.join(ARCHIVOS_DIR, f))) 
-                   for f in os.listdir(ARCHIVOS_DIR) 
-                   if os.path.isfile(os.path.join(ARCHIVOS_DIR, f))]
-        archivos.sort(key=lambda x: x[1])
-        
-        # Eliminar archivos hasta que el tamaño sea menor que el 80% del límite
-        for archivo, _ in archivos:
-            ruta_archivo = os.path.join(ARCHIVOS_DIR, archivo)
-            try:
-                os.remove(ruta_archivo)
-                tamano_total -= os.path.getsize(ruta_archivo)
-                if tamano_total < limite_tamano * 0.8:
-                    break
-            except Exception as e:
-                print(f"Error al eliminar {ruta_archivo}: {str(e)}")
+        if tamano_total > limite_tamano:
+            print(f"Directorio excede el límite de tamaño ({tamano_total} bytes). Limpiando archivos más antiguos...")
+            
+            # Obtener lista de archivos ordenados por tiempo de modificación (más antiguos primero)
+            archivos = [(f, os.path.getmtime(os.path.join(ARCHIVOS_DIR, f))) 
+                       for f in os.listdir(ARCHIVOS_DIR) 
+                       if os.path.isfile(os.path.join(ARCHIVOS_DIR, f))]
+            archivos.sort(key=lambda x: x[1])
+            
+            # Eliminar archivos hasta que el tamaño sea menor que el 80% del límite
+            for archivo, _ in archivos:
+                ruta_archivo = os.path.join(ARCHIVOS_DIR, archivo)
+                try:
+                    tamano_archivo = os.path.getsize(ruta_archivo)
+                    os.remove(ruta_archivo)
+                    tamano_total -= tamano_archivo
+                    if tamano_total < limite_tamano * 0.8:
+                        break
+                except Exception as e:
+                    print(f"Error al eliminar {ruta_archivo}: {str(e)}")
+    except Exception as e:
+        print(f"Error al verificar espacio disponible: {str(e)}")
+    
+    return True
 
 def obtener_ruta_archivo(nombre_archivo):
     """
@@ -118,10 +155,15 @@ def procesar_pdf_controller():
     temp_path = None
     try:
         # Verificar espacio disponible y limpiar si es necesario
-        verificar_espacio_disponible()
+        if not verificar_espacio_disponible():
+            return jsonify({"error": "No se pudo preparar el directorio de archivos"}), 500
         
         # Limpiar archivos antiguos automáticamente
         limpiar_archivos_antiguos()
+        
+        # Asegurar que el directorio existe después de la limpieza
+        if not crear_directorio_archivos():
+            return jsonify({"error": "No se pudo crear el directorio de archivos"}), 500
         
         # Guardar temporalmente el PDF
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
@@ -134,12 +176,14 @@ def procesar_pdf_controller():
             pdf_reader = PyPDF2.PdfReader(str(temp_path))
             num_pages = len(pdf_reader.pages)
             
-            # Validar si el PDF tiene más de 30 páginas
-            if num_pages > 30:
+            # Validar si el PDF tiene más de 60 páginas
+            if num_pages > 60:
                 return jsonify({
-                    "error": "El archivo excede el tamaño máximo permitido por la aplicación (30 páginas)",
+                    "error": "El archivo excede el tamaño máximo permitido por la aplicación (60 páginas)",
                     "paginas": num_pages
                 }), 413
+                
+            print(f"PDF cargado exitosamente con {num_pages} páginas")
         except Exception as e:
             return jsonify({"error": f"Error al leer el PDF: {str(e)}"}), 400
         finally:
@@ -149,11 +193,20 @@ def procesar_pdf_controller():
         # Leer los bytes del archivo para el procesamiento por el agente
         pdf_bytes = temp_path.read_bytes()
         
-        # Ejecutar el agente
-        result = agent.run_sync([
-            "extraeme la informacion del pdf",
+        # Usar el multi_agent en lugar del agent simple
+        print("Iniciando procesamiento con multi-agent...")
+        result = multi_agent.run_sync([
+            f"Extrae toda la información de análisis de suelo de este PDF de {num_pages} páginas. Procesa cada hoja por separado y extrae todos los reportes encontrados.",
             BinaryContent(data=pdf_bytes, media_type="application/pdf")
         ])
+
+        print(f"Procesamiento completado. Reportes extraídos: {len(result.output) if result.output else 0}")
+
+        # Verificar que se obtuvieron resultados
+        if not result.output:
+            return jsonify({
+                "error": "No se pudieron extraer datos del PDF. El documento podría no contener información de análisis de suelo en el formato esperado."
+            }), 422
 
         # Convertir resultados a JSON/Dict
         report_dicts = convertir_reportes_a_json(result.output, como_json=False)
@@ -163,25 +216,67 @@ def procesar_pdf_controller():
         excel_filename = generar_nombre_archivo(nombre_base, "xlsx")
         json_filename = generar_nombre_archivo(nombre_base, "json")
         
+        # Asegurar que el directorio existe antes de guardar archivos
+        if not crear_directorio_archivos():
+            return jsonify({"error": "No se pudo crear el directorio de archivos para guardar los resultados"}), 500
+        
         # Crear Excel y guardarlo en el directorio de archivos
-        df = pd.DataFrame(report_dicts)
-        ruta_excel = os.path.join(ARCHIVOS_DIR, excel_filename)
-        df.to_excel(ruta_excel, index=False)
+        try:
+            df = pd.DataFrame(report_dicts)
+            ruta_excel = os.path.join(ARCHIVOS_DIR, excel_filename)
+            df.to_excel(ruta_excel, index=False)
+            print(f"Archivo Excel guardado: {ruta_excel}")
+        except Exception as e:
+            return jsonify({"error": f"Error al crear archivo Excel: {str(e)}"}), 500
         
         # Guardar también los datos en JSON
-        ruta_json = os.path.join(ARCHIVOS_DIR, json_filename)
-        with open(ruta_json, 'w', encoding='utf-8') as f:
-            json.dump(report_dicts, f, ensure_ascii=False, indent=4)
-
+        try:
+            ruta_json = os.path.join(ARCHIVOS_DIR, json_filename)
+            with open(ruta_json, 'w', encoding='utf-8') as f:
+                json.dump(report_dicts, f, ensure_ascii=False, indent=4)
+            print(f"Archivo JSON guardado: {ruta_json}")
+        except Exception as e:
+            print(f"Advertencia: No se pudo guardar el archivo JSON: {str(e)}")
+            # No es crítico, continuar sin JSON
+            
+        programar_eliminacion_archivo(ruta_excel)
+        if os.path.exists(os.path.join(ARCHIVOS_DIR, json_filename)):
+            programar_eliminacion_archivo(os.path.join(ARCHIVOS_DIR, json_filename))
+        
         return jsonify({
-            "mensaje": "Proceso completado correctamente",
+            "mensaje": f"Proceso completado correctamente. Se extrajeron {len(report_dicts)} reportes del PDF de {num_pages} páginas.",
             "archivo_excel": excel_filename,
             "archivo_json": json_filename,
-            "redirect_url": f"/api/resultados/{excel_filename}"
+            "redirect_url": f"/api/resultados/{excel_filename}",
+            "reportes_extraidos": len(report_dicts),
+            "paginas_procesadas": num_pages
         })
 
     except Exception as e:
-        return jsonify({"error": f"Error al procesar el PDF: {str(e)}"}), 500
+        error_msg = str(e)
+        print(f"Error completo al procesar PDF: {error_msg}")
+        
+        # Mensajes de error más específicos
+        if "Content field missing" in error_msg:
+            return jsonify({
+                "error": "El documento es demasiado complejo para procesar. Intenta con un PDF más pequeño o divide el documento en secciones.",
+                "detalle": "El modelo de IA no pudo generar una respuesta válida para este documento."
+            }), 422
+        elif "quota exceeded" in error_msg.lower() or "rate limit" in error_msg.lower():
+            return jsonify({
+                "error": "Se han agotado temporalmente los recursos de procesamiento. Inténtalo de nuevo en unos minutos.",
+                "detalle": "Límite de API alcanzado."
+            }), 429
+        elif "token limit" in error_msg.lower():
+            return jsonify({
+                "error": "El documento es demasiado grande para procesar de una vez. Intenta dividirlo en partes más pequeñas.",
+                "detalle": "Límite de tokens excedido."
+            }), 413
+        else:
+            return jsonify({
+                "error": f"Error al procesar el PDF: {error_msg}",
+                "detalle": "Error interno del sistema."
+            }), 500
     
     finally:
         # Intentar eliminar el archivo temporal en el bloque finally
@@ -191,6 +286,7 @@ def procesar_pdf_controller():
                 import gc
                 gc.collect()  # Forzar la recolección de basura
                 os.remove(temp_path)
+                print("Archivo temporal eliminado correctamente")
         except Exception as e:
             print(f"Error al eliminar archivo temporal: {str(e)}")
 
@@ -208,7 +304,7 @@ def mostrar_resultados_controller(nombre_archivo):
         
         # Verificar que el archivo existe
         if not os.path.exists(ruta_excel):
-            return jsonify({"error": "El archivo no existe"}), 404
+            return jsonify({"error": "El archivo no existe o ha caducado"}), 404
         
         # Cargar los datos del Excel
         df = pd.read_excel(ruta_excel)
@@ -229,7 +325,7 @@ def mostrar_resultados_controller(nombre_archivo):
             nombre_archivo=nombre_archivo,
             json_filename=json_filename,
             # Añadir información sobre la caducidad de archivos
-            dias_caducidad=TIEMPO_CADUCIDAD // (24 * 60 * 60)
+            dias_caducidad=TIEMPO_CADUCIDAD // 60
         )
     
     except Exception as e:
@@ -249,7 +345,7 @@ def descargar_excel_controller(nombre_archivo):
         
         # Verificar que el archivo existe
         if not os.path.exists(ruta_archivo):
-            return jsonify({"error": "El archivo no existe"}), 404
+            return jsonify({"error": "El archivo no existe o ha caducado"}), 404
         
         # Descargar el archivo
         return send_file(
@@ -267,7 +363,8 @@ def descargar_filtrado_controller():
     """
     try:
         # Verificar espacio disponible y limpiar si es necesario
-        verificar_espacio_disponible()
+        if not verificar_espacio_disponible():
+            return jsonify({"error": "No se pudo preparar el directorio de archivos"}), 500
         
         # Obtener los datos filtrados del JSON enviado por POST
         if not request.is_json:
@@ -296,3 +393,25 @@ def descargar_filtrado_controller():
         
     except Exception as e:
         return jsonify({"error": f"Error al generar el Excel filtrado: {str(e)}"}), 500
+    
+def programar_eliminacion_archivo(ruta_archivo, delay=1200):  # 1200 segundos = 20 minutos
+    """
+    Programa la eliminación de un archivo específico después del delay especificado
+    """
+    def eliminar_archivo():
+        time.sleep(delay)
+        try:
+            if os.path.exists(ruta_archivo):
+                os.remove(ruta_archivo)
+                print(f"Archivo eliminado automáticamente: {ruta_archivo}")
+                
+                # Verificar si la carpeta está vacía y eliminarla
+                if os.path.exists(ARCHIVOS_DIR) and not os.listdir(ARCHIVOS_DIR):
+                    os.rmdir(ARCHIVOS_DIR)
+                    print("Carpeta archivos_generados eliminada (estaba vacía)")
+        except Exception as e:
+            print(f"Error al eliminar archivo programado {ruta_archivo}: {str(e)}")
+    
+    # Ejecutar en un hilo separado
+    thread = threading.Thread(target=eliminar_archivo, daemon=True)
+    thread.start()
