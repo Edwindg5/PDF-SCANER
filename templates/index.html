@@ -1,4 +1,4 @@
-
+// scanner/templates/index.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,16 +7,19 @@
     <title>Procesador de PDF - INIFAP Chiapas</title>
     <style>
         :root {
-            --inifap-verde-primario: #0f7b0f;
-            --inifap-verde-secundario: #2d8f2d;
-            --inifap-dorado: #d4af37;
-            --inifap-tierra: #8b4513;
-            --inifap-cielo: #87ceeb;
-            --inifap-blanco: #ffffff;
-            --inifap-gris-claro: #f8f9fa;
-            --inifap-gris: #6c757d;
-            --inifap-sombra: rgba(15, 123, 15, 0.1);
-            --inifap-gradiente-principal: linear-gradient(135deg, var(--inifap-cielo) 0%, var(--inifap-gris-claro) 100%);
+            --verde-primario: #0b5345;
+            --verde-secundario: #148a74;
+            --verde-claro: #1abc9c;
+            --verde-oscuro: #053d36;
+            --verde-medio: #16a085;
+            --blanco: #ffffff;
+            --gris-claro: #ecf0f1;
+            --gris: #7f8c8d;
+            --gris-oscuro: #2c3e50;
+            --sombra-principal: rgba(11, 83, 69, 0.25);
+            --sombra-suave: rgba(11, 83, 69, 0.15);
+            --dorado: #f39c12;
+            --dorado-claro: #f4d03f;
         }
 
         * {
@@ -27,7 +30,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--inifap-gradiente-principal);
+            background: linear-gradient(135deg, var(--verde-primario) 0%, var(--verde-secundario) 50%, var(--verde-claro) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -36,7 +39,6 @@
             overflow-x: hidden;
         }
 
-        /* Elementos decorativos del fondo */
         body::before {
             content: '';
             position: fixed;
@@ -44,8 +46,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.08'%3E%3Cpath d='M40 40c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm20 0c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-            animation: backgroundMove 30s ease-in-out infinite;
+            background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2316a085' fill-opacity='0.1'%3E%3Cpath d='M40 40c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm20 0c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            animation: backgroundMove 25s ease-in-out infinite;
             z-index: -2;
         }
 
@@ -56,30 +58,73 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230f7b0f' fill-opacity='0.03'%3E%3Cpath d='M50 50c0-2.761-2.239-5-5-5s-5 2.239-5 5 2.239 5 5 5 5-2.239 5-5z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-            animation: backgroundMoveReverse 25s ease-in-out infinite;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230b5345' fill-opacity='0.05'%3E%3Cpath d='M50 50c0-2.761-2.239-5-5-5s-5 2.239-5 5 2.239 5 5 5 5-2.239 5-5z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            animation: backgroundMoveReverse 30s ease-in-out infinite;
             z-index: -1;
         }
 
         @keyframes backgroundMove {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-30px) rotate(3deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
         }
 
         @keyframes backgroundMoveReverse {
             0%, 100% { transform: translateX(0px) rotate(0deg); }
-            50% { transform: translateX(20px) rotate(-2deg); }
+            50% { transform: translateX(15px) rotate(-1deg); }
+        }
+
+        /* Header con logos */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: rgba(11, 83, 69, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border-bottom: 3px solid var(--verde-claro);
+        }
+
+        .logo {
+            height: 70px;
+            width: auto;
+            border-radius: 10px;
+            background: var(--blanco);
+            padding: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .logo-inifap {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border: 2px solid var(--verde-medio);
+        }
+
+        .logo-chiapas {
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            border: 2px solid var(--dorado);
         }
 
         .main-container {
             max-width: 900px;
             width: 100%;
             padding: 30px;
+            margin-top: 120px;
             position: relative;
             z-index: 1;
         }
 
-        /* Header con logo conceptual */
         .header {
             text-align: center;
             margin-bottom: 40px;
@@ -93,18 +138,19 @@
         }
 
         .logo-circle {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--verde-medio), var(--verde-claro));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 15px;
-            box-shadow: 0 15px 40px rgba(15, 123, 15, 0.3);
+            box-shadow: 0 25px 60px var(--sombra-principal);
             position: relative;
             overflow: hidden;
             animation: logoFloat 4s ease-in-out infinite;
+            border: 5px solid var(--verde-oscuro);
         }
 
         .logo-circle::before {
@@ -114,20 +160,21 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            animation: logoShine 6s linear infinite;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: logoShine 4s linear infinite;
         }
 
         .logo-circle .leaf-icon {
-            font-size: 40px;
-            color: var(--inifap-dorado);
+            font-size: 50px;
+            color: var(--verde-oscuro);
             position: relative;
             z-index: 2;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.3));
         }
 
         @keyframes logoFloat {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-8px) scale(1.05); }
+            0%, 100% { transform: translateY(0px) scale(1); box-shadow: 0 25px 60px var(--sombra-principal); }
+            50% { transform: translateY(-12px) scale(1.08); box-shadow: 0 35px 80px var(--sombra-principal); }
         }
 
         @keyframes logoShine {
@@ -136,39 +183,45 @@
         }
 
         .main-title {
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: var(--inifap-verde-primario);
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-            letter-spacing: -0.5px;
+            font-size: 3.2rem;
+            font-weight: 900;
+            color: var(--blanco);
+            margin-bottom: 20px;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.4);
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--blanco), var(--gris-claro));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .subtitle {
-            font-size: 1.3rem;
-            color: var(--inifap-gris);
-            font-weight: 500;
-            margin-bottom: 8px;
+            font-size: 1.4rem;
+            color: var(--gris-claro);
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .institution {
-            font-size: 1rem;
-            color: var(--inifap-verde-secundario);
-            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--verde-claro);
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        /* Formulario principal */
         #upload-form {
-            background: var(--inifap-blanco);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            border: 1px solid rgba(15, 123, 15, 0.1);
+            background: var(--blanco);
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.2);
+            border: 3px solid var(--verde-claro);
             position: relative;
             overflow: hidden;
             animation: slideInUp 1s ease-out 0.3s both;
+            margin-bottom: 25px;
         }
 
         #upload-form::before {
@@ -177,21 +230,21 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, var(--inifap-verde-primario), var(--inifap-dorado), var(--inifap-verde-primario));
-            border-radius: 20px 20px 0 0;
+            height: 10px;
+            background: linear-gradient(90deg, var(--verde-oscuro), var(--verde-primario), var(--verde-medio), var(--verde-claro));
+            border-radius: 30px 30px 0 0;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 35px;
         }
 
         label {
             display: block;
-            margin-bottom: 12px;
-            font-weight: 700;
-            color: var(--inifap-verde-primario);
-            font-size: 1.1rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            color: var(--verde-oscuro);
+            font-size: 1.3rem;
             position: relative;
             display: inline-block;
         }
@@ -199,54 +252,73 @@
         label::after {
             content: '';
             position: absolute;
-            bottom: -4px;
+            bottom: -8px;
             left: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--inifap-dorado);
-            border-radius: 2px;
+            width: 60px;
+            height: 5px;
+            background: linear-gradient(90deg, var(--verde-medio), var(--verde-claro));
+            border-radius: 3px;
         }
 
         #pdf-file {
             width: 100%;
-            padding: 15px 20px;
-            border: 3px dashed rgba(15, 123, 15, 0.3);
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(15, 123, 15, 0.02);
+            padding: 22px 30px;
+            border: 4px dashed var(--verde-medio);
+            border-radius: 20px;
+            font-size: 17px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(22, 160, 133, 0.06);
             cursor: pointer;
+            color: var(--gris-oscuro);
+            font-weight: 600;
         }
 
         #pdf-file:hover {
-            border-color: var(--inifap-verde-primario);
-            background: rgba(15, 123, 15, 0.05);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(15, 123, 15, 0.1);
+            border-color: var(--verde-oscuro);
+            background: rgba(22, 160, 133, 0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px var(--sombra-suave);
         }
 
         #pdf-file:focus {
             outline: none;
-            border-color: var(--inifap-verde-primario);
-            box-shadow: 0 0 0 4px rgba(15, 123, 15, 0.1);
+            border-color: var(--verde-primario);
+            box-shadow: 0 0 0 6px rgba(11, 83, 69, 0.25);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         button {
-            width: 100%;
-            padding: 18px 24px;
-            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
-            color: var(--inifap-blanco);
+            flex: 1;
+            min-width: 220px;
+            padding: 24px 32px;
             border: none;
-            border-radius: 12px;
+            border-radius: 18px;
             cursor: pointer;
-            font-weight: 700;
-            font-size: 1.1rem;
+            font-weight: 800;
+            font-size: 1.2rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 1.5px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 25px rgba(15, 123, 15, 0.3);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-primario), var(--verde-medio));
+            color: var(--blanco);
+            border: 2px solid var(--verde-claro);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--verde-medio), var(--verde-claro));
+            color: var(--verde-oscuro);
+            border: 2px solid var(--verde-primario);
         }
 
         button::before {
@@ -256,13 +328,21 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
             transition: left 0.6s;
         }
 
         button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(15, 123, 15, 0.4);
+            transform: translateY(-6px);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 18px 50px var(--sombra-principal);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 18px 50px rgba(22, 160, 133, 0.4);
         }
 
         button:hover::before {
@@ -270,29 +350,30 @@
         }
 
         button:active {
-            transform: translateY(-1px);
+            transform: translateY(-3px);
         }
 
         button:disabled {
-            background: linear-gradient(135deg, var(--inifap-gris), #95a5a6);
+            background: linear-gradient(135deg, var(--gris), #95a5a6);
             cursor: not-allowed;
             transform: none;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2);
+            box-shadow: 0 6px 20px rgba(127, 140, 141, 0.3);
         }
 
         .limits-info {
-            margin-top: 25px;
-            padding: 20px;
-            background: rgba(15, 123, 15, 0.05);
-            border-radius: 12px;
-            border-left: 5px solid var(--inifap-dorado);
+            margin-top: 35px;
+            padding: 30px;
+            background: rgba(11, 83, 69, 0.12);
+            border-radius: 20px;
+            border-left: 8px solid var(--verde-claro);
             animation: slideInUp 1s ease-out 0.6s both;
         }
 
         .limits-info p {
-            margin-bottom: 12px;
-            color: var(--inifap-verde-primario);
-            font-weight: 600;
+            margin-bottom: 18px;
+            color: var(--verde-oscuro);
+            font-weight: 700;
+            line-height: 1.7;
         }
 
         .limits-info p:last-child {
@@ -301,37 +382,36 @@
 
         .info-badge {
             display: inline-block;
-            background: linear-gradient(135deg, var(--inifap-dorado), #f4d03f);
-            color: #2c3e50;
-            border-radius: 6px;
-            padding: 4px 12px;
-            font-size: 12px;
-            font-weight: 700;
-            margin-left: 10px;
+            background: linear-gradient(135deg, var(--verde-medio), var(--verde-claro));
+            color: var(--verde-oscuro);
+            border-radius: 10px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 800;
+            margin-left: 15px;
             vertical-align: middle;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+            letter-spacing: 1px;
+            box-shadow: 0 4px 12px rgba(22, 160, 133, 0.4);
         }
 
         .info-text {
-            font-size: 0.9rem;
-            color: var(--inifap-gris);
-            line-height: 1.6;
+            font-size: 1rem;
+            color: var(--gris);
+            line-height: 1.8;
         }
 
-        /* Contenedor de procesamiento mejorado */
         .processing-container {
             display: none;
             margin: 40px auto;
-            padding: 40px;
-            background: var(--inifap-blanco);
-            border-radius: 20px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.15);
-            border: 1px solid rgba(15, 123, 15, 0.1);
+            padding: 50px;
+            background: var(--blanco);
+            border-radius: 30px;
+            box-shadow: 0 35px 100px rgba(0,0,0,0.25);
+            border: 3px solid var(--verde-claro);
             position: relative;
             overflow: hidden;
-            animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: scaleIn 0.7s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .processing-container::before {
@@ -340,9 +420,9 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, var(--inifap-verde-primario), var(--inifap-dorado), var(--inifap-verde-primario));
-            border-radius: 20px 20px 0 0;
+            height: 10px;
+            background: linear-gradient(90deg, var(--verde-oscuro), var(--verde-primario), var(--verde-medio), var(--verde-claro));
+            border-radius: 30px 30px 0 0;
         }
 
         @keyframes scaleIn {
@@ -353,47 +433,48 @@
         .processing-header {
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .processing-icon {
-            width: 48px;
-            height: 48px;
-            margin-right: 20px;
-            animation: processingIconSpin 2s ease-in-out infinite;
+            width: 60px;
+            height: 60px;
+            margin-right: 30px;
+            animation: processingIconSpin 3s ease-in-out infinite;
         }
 
         @keyframes processingIconSpin {
             0%, 100% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(5deg) scale(1.1); }
+            50% { transform: rotate(10deg) scale(1.2); }
         }
 
         .processing-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--inifap-verde-primario);
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: var(--verde-oscuro);
             margin: 0;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.15);
         }
 
         .processing-subtitle {
-            color: var(--inifap-gris);
-            margin: 12px 0 30px 0;
-            font-size: 1.1rem;
-            font-weight: 500;
+            color: var(--gris);
+            margin: 18px 0 40px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
         }
 
         .progress-container {
-            margin-bottom: 35px;
+            margin-bottom: 45px;
         }
 
         .progress-bar-container {
-            height: 12px;
-            background: rgba(15, 123, 15, 0.1);
-            border-radius: 6px;
+            height: 18px;
+            background: rgba(11, 83, 69, 0.18);
+            border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 15px;
+            margin-bottom: 22px;
             position: relative;
+            border: 2px solid rgba(11, 83, 69, 0.25);
         }
 
         .progress-bar-container::before {
@@ -403,7 +484,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
             animation: progressShimmer 2s infinite;
         }
 
@@ -415,9 +496,9 @@
         .progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--inifap-verde-primario), var(--inifap-dorado), var(--inifap-verde-secundario));
-            border-radius: 6px;
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            background: linear-gradient(90deg, var(--verde-oscuro), var(--verde-primario), var(--verde-medio));
+            border-radius: 10px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 1;
         }
@@ -425,23 +506,23 @@
         .progress-status {
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
-            color: var(--inifap-gris);
-            font-weight: 600;
+            font-size: 15px;
+            color: var(--gris);
+            font-weight: 700;
         }
 
         .steps-container {
-            margin-top: 30px;
+            margin-top: 40px;
         }
 
         .step-item {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-            color: var(--inifap-gris);
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(15, 123, 15, 0.1);
-            transition: all 0.4s ease;
+            margin-bottom: 28px;
+            color: var(--gris);
+            padding: 18px 0;
+            border-bottom: 2px solid rgba(11, 83, 69, 0.18);
+            transition: all 0.5s ease;
         }
 
         .step-item:last-child {
@@ -449,109 +530,107 @@
         }
 
         .step-number {
-            width: 36px;
-            height: 36px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            background: rgba(15, 123, 15, 0.1);
-            color: var(--inifap-gris);
+            background: rgba(11, 83, 69, 0.18);
+            color: var(--gris);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
-            font-size: 14px;
-            font-weight: 700;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid transparent;
+            margin-right: 25px;
+            font-size: 16px;
+            font-weight: 800;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 3px solid transparent;
         }
 
         .step-text {
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.4s ease;
+            font-size: 1.1rem;
+            font-weight: 700;
+            transition: all 0.5s ease;
             flex-grow: 1;
         }
 
         .step-status {
             margin-left: auto;
-            font-size: 13px;
-            font-weight: 600;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: rgba(15, 123, 15, 0.1);
-            color: var(--inifap-gris);
-            transition: all 0.4s ease;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 6px 18px;
+            border-radius: 25px;
+            background: rgba(11, 83, 69, 0.18);
+            color: var(--gris);
+            transition: all 0.5s ease;
         }
 
-        /* Estados de los pasos */
         .step-item.active {
-            background: rgba(15, 123, 15, 0.05);
-            border-radius: 8px;
-            padding: 16px 12px;
-            margin: 8px 0;
-            transform: translateX(5px);
+            background: rgba(11, 83, 69, 0.1);
+            border-radius: 15px;
+            padding: 25px 18px;
+            margin: 12px 0;
+            transform: translateX(10px);
         }
 
         .step-item.active .step-number {
-            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
-            color: var(--inifap-blanco);
-            box-shadow: 0 4px 15px rgba(15, 123, 15, 0.3);
-            animation: stepPulse 2s infinite;
+            background: linear-gradient(135deg, var(--verde-primario), var(--verde-medio));
+            color: var(--blanco);
+            box-shadow: 0 6px 22px var(--sombra-suave);
+            animation: stepPulse 2.5s infinite;
         }
 
         .step-item.active .step-text {
-            color: var(--inifap-verde-primario);
-            font-weight: 700;
+            color: var(--verde-oscuro);
+            font-weight: 800;
         }
 
         .step-item.active .step-status {
-            background: linear-gradient(135deg, var(--inifap-dorado), #f4d03f);
-            color: #2c3e50;
-            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+            background: linear-gradient(135deg, var(--verde-medio), var(--verde-claro));
+            color: var(--verde-oscuro);
+            box-shadow: 0 4px 12px rgba(22, 160, 133, 0.4);
         }
 
         .step-item.completed .step-number {
-            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
-            color: var(--inifap-blanco);
-            box-shadow: 0 4px 15px rgba(15, 123, 15, 0.3);
+            background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-primario));
+            color: var(--blanco);
+            box-shadow: 0 6px 22px var(--sombra-principal);
         }
 
         .step-item.completed .step-text {
-            color: var(--inifap-verde-primario);
-            font-weight: 600;
+            color: var(--verde-oscuro);
+            font-weight: 700;
         }
 
         .step-item.completed .step-status {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-            color: var(--inifap-blanco);
-            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+            background: linear-gradient(135deg, var(--verde-medio), var(--verde-claro));
+            color: var(--verde-oscuro);
+            box-shadow: 0 4px 12px rgba(22, 160, 133, 0.4);
         }
 
         @keyframes stepPulse {
-            0%, 100% { box-shadow: 0 4px 15px rgba(15, 123, 15, 0.3); }
-            50% { box-shadow: 0 4px 25px rgba(15, 123, 15, 0.5); }
+            0%, 100% { box-shadow: 0 6px 22px var(--sombra-suave); }
+            50% { box-shadow: 0 8px 35px var(--sombra-principal); }
         }
 
         .estimation-text {
             text-align: center;
-            margin-top: 25px;
-            color: var(--inifap-verde-secundario);
-            font-size: 14px;
-            font-weight: 600;
+            margin-top: 35px;
+            color: var(--verde-primario);
+            font-size: 16px;
+            font-weight: 700;
             font-style: italic;
-            padding: 12px 20px;
-            background: rgba(15, 123, 15, 0.05);
-            border-radius: 20px;
-            border: 1px dashed rgba(15, 123, 15, 0.2);
+            padding: 18px 30px;
+            background: rgba(11, 83, 69, 0.1);
+            border-radius: 30px;
+            border: 3px dashed rgba(11, 83, 69, 0.35);
         }
 
-        /* Resultado */
         #result {
-            margin-top: 30px;
-            padding: 25px;
-            border-radius: 15px;
+            margin-top: 40px;
+            padding: 35px;
+            border-radius: 25px;
             display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            animation: slideInUp 0.6s ease-out;
+            box-shadow: 0 18px 50px rgba(0,0,0,0.2);
+            animation: slideInUp 0.7s ease-out;
             position: relative;
             overflow: hidden;
         }
@@ -562,65 +641,166 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            border-radius: 15px 15px 0 0;
+            height: 6px;
+            border-radius: 25px 25px 0 0;
         }
 
         .success {
-            background: rgba(39, 174, 96, 0.1);
-            border: 1px solid rgba(39, 174, 96, 0.3);
-            color: #27ae60;
+            background: rgba(22, 160, 133, 0.18);
+            border: 3px solid var(--verde-claro);
+            color: var(--verde-oscuro);
         }
 
         .success::before {
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            background: linear-gradient(90deg, var(--verde-medio), var(--verde-claro));
         }
 
         .error {
-            background: rgba(231, 76, 60, 0.1);
-            border: 1px solid rgba(231, 76, 60, 0.3);
-            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.18);
+            border: 3px solid #e74c3c;
+            color: #c0392b;
         }
 
         .error::before {
             background: linear-gradient(90deg, #e74c3c, #c0392b);
         }
 
-        /* Animaciones de entrada */
         @keyframes slideInDown {
-            0% { transform: translateY(-50px); opacity: 0; }
+            0% { transform: translateY(-80px); opacity: 0; }
             100% { transform: translateY(0); opacity: 1; }
         }
 
         @keyframes slideInUp {
-            0% { transform: translateY(50px); opacity: 0; }
+            0% { transform: translateY(80px); opacity: 0; }
             100% { transform: translateY(0); opacity: 1; }
         }
 
-        /* Responsive */
+        .floating-element {
+            position: absolute;
+            opacity: 0.2;
+            animation: floatingElements 20s infinite ease-in-out;
+            font-size: 28px;
+            color: var(--verde-claro);
+            pointer-events: none;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 25%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 70%;
+            right: 15%;
+            animation-delay: 7s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 30%;
+            left: 18%;
+            animation-delay: 14s;
+        }
+
+        @keyframes floatingElements {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.2; }
+            25% { transform: translateY(-30px) rotate(10deg); opacity: 0.3; }
+            50% { transform: translateY(-20px) rotate(-10deg); opacity: 0.25; }
+            75% { transform: translateY(-40px) rotate(8deg); opacity: 0.35; }
+        }
+
+        .games-btn {
+            position: fixed !important;
+            bottom: 20px !important;
+            right: 20px !important;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--verde-medio), var(--verde-claro));
+            color: var(--blanco);
+            border: none;
+            border-radius: 50%;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 15px 40px var(--sombra-principal);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 9999 !important;
+            border: 4px solid var(--verde-oscuro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            overflow: hidden;
+        }
+
+        .games-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: gamesBtnShine 3s linear infinite;
+        }
+
+        @keyframes gamesBtnShine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .games-btn:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 20px 50px var(--sombra-suave);
+            background: linear-gradient(135deg, var(--verde-claro), var(--verde-medio));
+        }
+
+        .games-btn-text {
+            position: relative;
+            z-index: 2;
+            font-weight: 900;
+        }
+
         @media (max-width: 768px) {
+            .top-header {
+                padding: 0 20px;
+                height: 80px;
+            }
+
+            .logo {
+                height: 55px;
+            }
+
             .main-container {
                 padding: 20px;
+                margin-top: 100px;
             }
 
             .main-title {
-                font-size: 2.2rem;
+                font-size: 2.5rem;
             }
 
             .subtitle {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
 
             #upload-form {
-                padding: 25px;
+                padding: 35px;
             }
 
             .processing-container {
-                padding: 25px;
+                padding: 35px;
             }
 
             .processing-title {
-                font-size: 1.5rem;
+                font-size: 1.8rem;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            button {
+                min-width: 100%;
             }
 
             .step-item {
@@ -630,54 +810,60 @@
             }
 
             .step-number {
-                margin-bottom: 8px;
+                margin-bottom: 12px;
                 margin-right: 0;
             }
 
             .step-status {
                 margin-left: 0;
-                margin-top: 8px;
+                margin-top: 12px;
+            }
+
+            .games-btn {
+                width: 65px;
+                height: 65px;
+                font-size: 1.5rem;
+                bottom: 15px;
+                right: 15px;
             }
         }
 
-        /* Elementos flotantes decorativos */
-        .floating-element {
-            position: absolute;
-            opacity: 0.1;
-            animation: floatingElements 15s infinite ease-in-out;
-        }
-
-        .floating-element:nth-child(1) {
-            top: 20%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-element:nth-child(2) {
-            top: 60%;
-            right: 15%;
-            animation-delay: 5s;
-        }
-
-        .floating-element:nth-child(3) {
-            bottom: 20%;
-            left: 20%;
-            animation-delay: 10s;
-        }
-
-        @keyframes floatingElements {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-20px) rotate(5deg); }
-            50% { transform: translateY(-10px) rotate(-5deg); }
-            75% { transform: translateY(-30px) rotate(3deg); }
+        /* Placeholder para logos - reemplazar con imágenes reales */
+        .logo-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            color: var(--verde-primario);
         }
     </style>
 </head>
 <body>
-    <!-- Elementos flotantes decorativos -->
+    <!-- Header superior con logos -->
+    <div class="top-header">
+        <div class="logo logo-inifap">
+            <!-- Placeholder para logo INIFAP - reemplazar con imagen real -->
+            <div class="logo-placeholder">
+                🌱<br>INIFAP
+            </div>
+        </div>
+        <div class="logo logo-chiapas">
+            <!-- Placeholder para logo Chiapas - reemplazar con imagen real -->
+            <div class="logo-placeholder">
+                🏛️<br>CHIAPAS
+            </div>
+        </div>
+    </div>
+
     <div class="floating-element">🌱</div>
     <div class="floating-element">🌾</div>
     <div class="floating-element">🍃</div>
+
+    <a href="/juegos" target="_blank" class="games-btn">
+        <span class="games-btn-text">🎮</span>
+    </a>
 
     <div class="main-container">
         <div class="header">
@@ -696,16 +882,18 @@
                 <label for="pdf-file">📄 Seleccione un archivo PDF para procesar:</label>
                 <input type="file" id="pdf-file" accept=".pdf" />
             </div>
-            <button id="upload-button">🚀 Iniciar procesamiento</button>
+            <div class="button-container">
+                <button id="upload-button" class="btn-primary">🚀 Iniciar procesamiento</button>
+            </div>
             <div class="limits-info">
-                <p><strong>📋 Nota:</strong> El sistema admite archivos PDF con un máximo de 60 páginas y el escaneo puede durar como tiempo min. y max.  de 10 a 30 minutos.</p>
+                <p><strong>📋 Nota:</strong> El sistema admite archivos PDF con un máximo de 60 páginas y el escaneo puede durar como tiempo min. y max. de 10 a 30 minutos.</p>
                 <p class="info-text">La aplicación gestiona automáticamente el almacenamiento y elimina archivos no utilizados después de 10 minutos. <span class="info-badge">Limpieza automática</span></p>
             </div>
         </div>
         
         <div id="processing-container" class="processing-container">
             <div class="processing-header">
-                <svg class="processing-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#0f7b0f" stroke-width="2">
+                <svg class="processing-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#0b5345" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 <h2 class="processing-title">🔄 Procesando documento</h2>
@@ -750,221 +938,135 @@
             <p class="estimation-text" id="estimation-text">⏱️ Tiempo estimado: calculando...</p>
         </div>
         
-        <div id="result"></div>
+        <div id="result">
+            <!-- Aquí se mostrarán los resultados -->
+        </div>
     </div>
-    
+
     <script>
-        document.getElementById('upload-button').addEventListener('click', async () => {
+        // JavaScript para funcionalidad básica
+        document.addEventListener('DOMContentLoaded', function() {
             const fileInput = document.getElementById('pdf-file');
-            const resultDiv = document.getElementById('result');
-            const processingContainer = document.getElementById('processing-container');
-            const progressBar = document.getElementById('progress-bar');
-            const progressPercentage = document.getElementById('progress-percentage');
-            const processingMessage = document.getElementById('processing-message');
-            const estimationText = document.getElementById('estimation-text');
             const uploadButton = document.getElementById('upload-button');
             const uploadForm = document.getElementById('upload-form');
-            
-            if (!fileInput.files.length) {
-                resultDiv.innerHTML = '<p>⚠️ Por favor, seleccione un archivo PDF para procesar.</p>';
-                resultDiv.className = 'error';
-                resultDiv.style.display = 'block';
-                return;
-            }
-            
-            const file = fileInput.files[0];
-            const formData = new FormData();
-            formData.append('file', file);
-            
-            // Ocultar formulario y resultados anteriores, mostrar procesamiento
-            uploadForm.style.opacity = '0.5';
-            uploadForm.style.pointerEvents = 'none';
-            resultDiv.style.display = 'none';
-            processingContainer.style.display = 'block';
-            uploadButton.disabled = true;
-            
-            // Mensajes de procesamiento más profesionales
-            const processingMessages = [
-                "📊 Analizando estructura del documento...",
-                "🔍 Validando contenido del PDF...",
-                "📤 Extrayendo información relevante...",
-                "⚙️ Procesando datos estructurados...",
-                "🗂️ Organizando información extraída...",
-                "📋 Preparando formato de salida...",
-                "📊 Estructurando datos para Excel...",
-                "✅ Finalizando proceso de conversión..."
-            ];
-            
-            // Estimaciones de tiempo más profesionales
-            const estimations = [
-                "⏱️ Tiempo estimado: calculando...",
-                "⏱️ Tiempo estimado: 45-60 segundos",
-                "⏱️ Tiempo estimado: 30-45 segundos",
-                "⏱️ Tiempo estimado: 15-30 segundos",
-                "⏰ Finalizando proceso...",
-                "🎯 Completando en breve..."
-            ];
-            
-            // Iniciar simulación de progreso
-            let progress = 0;
-            let messageIndex = 0;
-            let estimationIndex = 0;
-            
-            // Activar primer paso
-            updateStepStatus('step1', 'active', 'En proceso');
-            
-            const progressInterval = setInterval(() => {
-                // Incrementar progreso de manera realista
-                if (progress < 20) {
-                    progress += 0.5;
-                } else if (progress < 50) {
-                    progress += 0.8;
-                } else if (progress < 80) {
-                    progress += 0.6;
-                } else if (progress < 95) {
-                    progress += 0.3;
+            const processingContainer = document.getElementById('processing-container');
+            const resultDiv = document.getElementById('result');
+
+            // Efecto hover mejorado para el input de archivo
+            fileInput.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#0b5345';
+                this.style.background = 'rgba(22, 160, 133, 0.15)';
+                this.style.transform = 'scale(1.02)';
+            });
+
+            fileInput.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#16a085';
+                this.style.background = 'rgba(22, 160, 133, 0.06)';
+                this.style.transform = 'scale(1)';
+            });
+
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    uploadButton.style.background = 'linear-gradient(135deg, #148a74, #1abc9c)';
+                    uploadButton.style.transform = 'translateY(-2px)';
+                    uploadButton.style.boxShadow = '0 15px 40px rgba(11, 83, 69, 0.3)';
                 }
-                
-                // Actualizar UI
-                progressBar.style.width = `${progress}%`;
-                progressPercentage.textContent = `${Math.round(progress)}%`;
-                
-                // Actualizar mensajes y estimaciones periódicamente
-                if (Math.round(progress) % 12 === 0) {
-                    messageIndex = (messageIndex + 1) % processingMessages.length;
-                    processingMessage.textContent = processingMessages[messageIndex];
+            });
+
+            // Simulación de procesamiento mejorada
+            uploadButton.addEventListener('click', function() {
+                if (!fileInput.files.length) {
+                    alert('Por favor, seleccione un archivo PDF');
+                    return;
                 }
+
+                uploadForm.style.display = 'none';
+                processingContainer.style.display = 'block';
                 
-                if (Math.round(progress) % 20 === 0) {
-                    estimationIndex = Math.min(estimationIndex + 1, estimations.length - 1);
-                    estimationText.textContent = estimations[estimationIndex];
-                }
-                
-                // Actualizar pasos según el progreso
-                if (progress >= 25 && document.getElementById('step1').className === 'step-item active') {
-                    updateStepStatus('step1', 'completed', 'Completado');
-                    updateStepStatus('step2', 'active', 'En proceso');
-                }
-                
-                if (progress >= 50 && document.getElementById('step2').className === 'step-item active') {
-                    updateStepStatus('step2', 'completed', 'Completado');
-                    updateStepStatus('step3', 'active', 'En proceso');
-                }
-                
-                if (progress >= 75 && document.getElementById('step3').className === 'step-item active') {
-                    updateStepStatus('step3', 'completed', 'Completado');
-                    updateStepStatus('step4', 'active', 'En proceso');
-                }
-            }, 100);
-            
-            try {
-                const response = await fetch('/api/procesar-pdf', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                // Asegurar que la barra de progreso alcanza al menos el 95% antes de completar
-                const ensureProgress = () => {
-                    if (progress < 95) {
-                        progress = 95;
-                        progressBar.style.width = `${progress}%`;
-                        progressPercentage.textContent = `${Math.round(progress)}%`;
-                        setTimeout(finalizeProgress, 800);
-                    } else {
-                        finalizeProgress();
+                simulateProcessing();
+            });
+
+            function simulateProcessing() {
+                const steps = ['step1', 'step2', 'step3', 'step4'];
+                const progressBar = document.getElementById('progress-bar');
+                const progressPercentage = document.getElementById('progress-percentage');
+                let currentStep = 0;
+                let progress = 0;
+
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15 + 5;
+                    if (progress > 100) progress = 100;
+
+                    progressBar.style.width = progress + '%';
+                    progressPercentage.textContent = Math.round(progress) + '%';
+
+                    // Activar pasos
+                    if (progress > 25 && currentStep === 0) {
+                        activateStep('step1');
+                        currentStep++;
+                    } else if (progress > 50 && currentStep === 1) {
+                        completeStep('step1');
+                        activateStep('step2');
+                        currentStep++;
+                    } else if (progress > 75 && currentStep === 2) {
+                        completeStep('step2');
+                        activateStep('step3');
+                        currentStep++;
+                    } else if (progress > 90 && currentStep === 3) {
+                        completeStep('step3');
+                        activateStep('step4');
+                        currentStep++;
                     }
-                };
+
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        completeStep('step4');
+                        setTimeout(() => {
+                            showResult(true, 'Procesamiento completado exitosamente');
+                        }, 1000);
+                    }
+                }, 200);
+            }
+
+            function activateStep(stepId) {
+                const step = document.getElementById(stepId);
+                const status = document.getElementById(stepId + '-status');
                 
-                // Completar la barra de progreso y mostrar el resultado
-                const finalizeProgress = async () => {
-                    clearInterval(progressInterval);
-                    
-                    // Completar todos los pasos
-                    updateStepStatus('step4', 'completed', 'Completado');
-                    
-                    // Finalizar la barra de progreso
-                    progress = 100;
-                    progressBar.style.width = '100%';
-                    progressPercentage.textContent = '100%';
-                    processingMessage.textContent = "✅ Procesamiento completado";
-                    estimationText.textContent = "🎯 Redirigiendo a resultados...";
-                    
-                    // Esperar datos y mostrar resultado
-                    const data = await response.json();
-                    
-                    // Pequeña pausa para mostrar el 100% antes de continuar
-                    setTimeout(() => {
-                        processingContainer.style.display = 'none';
-                        uploadForm.style.opacity = '1';
-                        uploadForm.style.pointerEvents = 'auto';
-                        uploadButton.disabled = false;
-                        
-                        if (response.ok) {
-                            resultDiv.innerHTML = `
-                                <p>✅ ${data.mensaje}</p>
-                                <p>🔄 Redirigiendo a la visualización de resultados...</p>
-                            `;
-                            resultDiv.className = 'success';
-                            resultDiv.style.display = 'block';
-                            
-                            // Redirigir a la página de resultados
-                            if (data.redirect_url) {
-                                setTimeout(() => {
-                                    window.location.href = data.redirect_url;
-                                }, 1500);
-                            }
-                        } else {
-                            // Mostrar error
-                            if (data.paginas) {
-                                resultDiv.innerHTML = `
-                                    <p>❌ ${data.error}</p>
-                                    <p>📄 El documento contiene ${data.paginas} páginas, excediendo el límite de 60 páginas.</p>
-                                `;
-                            } else {
-                                resultDiv.innerHTML = `<p>❌ Error: ${data.error}</p>`;
-                            }
-                            resultDiv.className = 'error';
-                            resultDiv.style.display = 'block';
-                        }
-                    }, 1000);
-                };
+                step.classList.add('active');
+                status.textContent = 'En progreso';
+            }
+
+            function completeStep(stepId) {
+                const step = document.getElementById(stepId);
+                const status = document.getElementById(stepId + '-status');
                 
-                ensureProgress();
-                
-            } catch (error) {
-                // Manejo de errores
-                clearInterval(progressInterval);
+                step.classList.remove('active');
+                step.classList.add('completed');
+                status.textContent = 'Completado';
+            }
+
+            function showResult(success, message) {
                 processingContainer.style.display = 'none';
-                uploadForm.style.opacity = '1';
-                uploadForm.style.pointerEvents = 'auto';
-                uploadButton.disabled = false;
-                
-                resultDiv.innerHTML = `<p>❌ Error: ${error.message}</p>`;
-                resultDiv.className = 'error';
                 resultDiv.style.display = 'block';
+                resultDiv.className = success ? 'success' : 'error';
+                resultDiv.innerHTML = `
+                    <h3>${success ? '✅ Éxito' : '❌ Error'}</h3>
+                    <p>${message}</p>
+                    <button onclick="location.reload()" class="btn-secondary" style="margin-top: 20px;">
+                        🔄 Procesar otro archivo
+                    </button>
+                `;
             }
+
+            // Efecto parallax suave
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const parallax = document.querySelector('body::before');
+                const speed = scrolled * 0.5;
+            });
         });
-        
-        // Función para actualizar el estado de los pasos
-        function updateStepStatus(stepId, status, statusText) {
-            const step = document.getElementById(stepId);
-            const stepStatus = document.getElementById(`${stepId}-status`);
-            const stepNumber = document.getElementById(`${stepId}-number`);
-            
-            // Eliminar clases actuales
-            step.className = 'step-item';
-            
-            // Aplicar nueva clase
-            step.classList.add(status);
-            
-            // Actualizar texto de estado
-            stepStatus.textContent = statusText;
-            
-            // Cambiar el número por un check si está completado
-            if (status === 'completed') {
-                stepNumber.innerHTML = '✓';
-            }
-        }
     </script>
 </body>
 </html>

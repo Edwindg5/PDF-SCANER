@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,15 +7,17 @@
     <title>Juegos de Pensamiento - INIFAP Chiapas</title>
     <style>
         :root {
-            --inifap-verde-primario: #0f7b0f;
-            --inifap-verde-secundario: #2d8f2d;
-            --inifap-dorado: #d4af37;
-            --inifap-tierra: #8b4513;
-            --inifap-cielo: #87ceeb;
-            --inifap-blanco: #ffffff;
-            --inifap-gris-claro: #f8f9fa;
-            --inifap-gris: #6c757d;
-            --inifap-sombra: rgba(15, 123, 15, 0.1);
+            --verde-primario: #0b5345;
+            --verde-secundario: #148a74;
+            --verde-claro: #1abc9c;
+            --verde-oscuro: #053d36;
+            --verde-medio: #16a085;
+            --blanco: #ffffff;
+            --gris-claro: #ecf0f1;
+            --gris: #7f8c8d;
+            --gris-oscuro: #2c3e50;
+            --sombra-principal: rgba(11, 83, 69, 0.25);
+            --sombra-suave: rgba(11, 83, 69, 0.15);
         }
 
         * {
@@ -25,14 +28,11 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--inifap-cielo) 0%, var(--inifap-gris-claro) 100%);
+            background: linear-gradient(135deg, var(--verde-primario) 0%, var(--verde-secundario) 50%, var(--verde-claro) 100%);
             min-height: 100vh;
             color: #333;
-            position: relative;
-            overflow-x: hidden;
         }
 
-        /* Elementos decorativos del fondo */
         body::before {
             content: '';
             position: fixed;
@@ -40,7 +40,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M30 15c0 8.284-6.716 15-15 15s-15-6.716-15-15S6.716 0 15 0s15 6.716 15 15zm15 15c0 8.284-6.716 15-15 15s-15-6.716-15-15 6.716-15 15-15 15 6.716 15 15z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2316a085' fill-opacity='0.1'%3E%3Cpath d='M30 15c0 8.284-6.716 15-15 15s-15-6.716-15-15S6.716 0 15 0s15 6.716 15 15zm15 15c0 8.284-6.716 15-15 15s-15-6.716-15-15 6.716-15 15-15 15 6.716 15 15z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
             animation: float 25s ease-in-out infinite;
             z-index: -1;
         }
@@ -50,244 +50,289 @@
             50% { transform: translateY(-30px) rotate(3deg); }
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
+        /* Panel lateral */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: linear-gradient(180deg, var(--verde-oscuro), var(--verde-primario));
+            box-shadow: 5px 0 25px var(--sombra-principal);
+            z-index: 1000;
+            overflow-y: auto;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
-            color: var(--inifap-blanco);
-            padding: 30px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 15px 40px var(--inifap-sombra);
-            position: relative;
-            overflow: hidden;
-            animation: slideInDown 1s ease-out;
+        .sidebar.collapsed {
+            transform: translateX(-280px);
         }
 
-        .header::before {
-            content: '';
+        .sidebar-toggle {
             position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 120px;
-            height: 120px;
-            background: var(--inifap-dorado);
-            border-radius: 50%;
-            opacity: 0.2;
-            animation: pulse 5s ease-in-out infinite;
+            right: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-primario));
+            border: none;
+            border-radius: 0 15px 15px 0;
+            color: var(--blanco);
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 3px 0 15px var(--sombra-principal);
+            transition: all 0.3s ease;
         }
 
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -10%;
-            width: 90px;
-            height: 90px;
-            background: var(--inifap-cielo);
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: pulse 4s ease-in-out infinite reverse;
+        .sidebar-toggle:hover {
+            background: linear-gradient(135deg, var(--verde-primario), var(--verde-claro));
+            transform: translateY(-50%) scale(1.1);
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); }
+        .sidebar-header {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.1);
         }
 
-        .header h1 {
-            font-size: 2.5rem;
+        .sidebar-header h2 {
+            color: var(--blanco);
+            font-size: 1.4rem;
+            margin-bottom: 8px;
             font-weight: 800;
-            margin-bottom: 15px;
-            position: relative;
-            z-index: 2;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
-        .header .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            position: relative;
-            z-index: 2;
+        .sidebar-header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
             font-weight: 500;
         }
 
-        /* Juegos Grid */
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+        .menu-items {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 25px;
+            color: var(--blanco);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.1);
+            border-left-color: var(--verde-claro);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.15);
+            border-left-color: var(--verde-claro);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .menu-item .icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .menu-item .text {
+            flex: 1;
+        }
+
+        .menu-item .title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .menu-item .desc {
+            font-size: 0.8rem;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        /* Área principal */
+        .main-content {
+            margin-left: 320px;
+            padding: 30px;
+            min-height: 100vh;
+            transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .main-content.expanded {
+            margin-left: 40px;
+        }
+
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 60px);
+            text-align: center;
+            color: var(--blanco);
+        }
+
+        .welcome-screen h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.4);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .welcome-screen p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            line-height: 1.6;
             animation: fadeInUp 1s ease-out 0.3s both;
         }
 
-        .game-card {
-            background: var(--inifap-blanco);
+        .game-area {
+            display: none;
+            background: var(--blanco);
             border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-            border: 1px solid rgba(15, 123, 15, 0.1);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 35px;
+            margin: 20px 0;
+            box-shadow: 0 20px 50px var(--sombra-principal);
+            border: 2px solid var(--verde-claro);
+            animation: slideInRight 0.6s ease-out;
             position: relative;
-            overflow: hidden;
-            cursor: pointer;
         }
 
-        .game-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--inifap-verde-primario), var(--inifap-dorado), var(--inifap-verde-primario));
-            border-radius: 20px 20px 0 0;
+        .game-area.active {
+            display: block;
         }
 
-        .game-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 60px rgba(15, 123, 15, 0.15);
-        }
-
-        .game-card.active {
-            border-color: var(--inifap-verde-primario);
-            box-shadow: 0 25px 60px rgba(15, 123, 15, 0.2);
-            transform: scale(1.02);
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--verde-claro);
         }
 
         .game-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--inifap-verde-primario);
-            margin-bottom: 15px;
+            font-size: 2.2rem;
+            color: var(--verde-oscuro);
+            font-weight: 800;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            gap: 15px;
         }
 
         .game-description {
-            color: var(--inifap-gris);
-            margin-bottom: 20px;
-            line-height: 1.6;
-            font-size: 0.95rem;
+            color: var(--gris);
+            font-size: 1.1rem;
+            font-weight: 500;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .game-content {
-            display: none;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 2px solid rgba(15, 123, 15, 0.1);
-        }
-
-        .game-content.active {
-            display: block;
-            animation: slideInUp 0.5s ease-out;
-        }
-
-        /* Botones */
-        .btn {
-            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
-            color: var(--inifap-blanco);
+        .close-game {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-primario));
+            color: var(--blanco);
             border: none;
-            padding: 12px 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px var(--sombra-suave);
+        }
+
+        .close-game:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, var(--verde-primario), var(--verde-claro));
+        }
+
+        /* Estilos de juegos */
+        .btn {
+            background: linear-gradient(135deg, var(--verde-oscuro), var(--verde-primario));
+            color: var(--blanco);
+            border: none;
+            padding: 12px 25px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin: 5px;
+            box-shadow: 0 5px 15px var(--sombra-suave);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(15, 123, 15, 0.3);
-        }
-
-        .btn:hover::before {
-            left: 100%;
+            box-shadow: 0 8px 25px var(--sombra-principal);
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, var(--inifap-gris), #95a5a6);
+            background: linear-gradient(135deg, var(--gris), #95a5a6);
         }
 
-        .btn-gold {
-            background: linear-gradient(135deg, var(--inifap-dorado), #f4d03f);
-            color: #2c3e50;
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(11, 83, 69, 0.08);
+            border-radius: 10px;
+            font-weight: 600;
+            color: var(--verde-oscuro);
         }
 
-        /* Juego específicos */
+        /* Juego de Memoria */
         .memory-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            max-width: 300px;
-            margin: 0 auto;
+            gap: 12px;
+            max-width: 320px;
+            margin: 20px auto;
         }
 
         .memory-card {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
-            border-radius: 10px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--verde-primario), var(--verde-secundario));
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            color: var(--inifap-blanco);
+            font-size: 1.6rem;
+            color: var(--blanco);
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            border: 2px solid var(--verde-oscuro);
         }
 
-        .memory-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--inifap-dorado);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-
-        .memory-card:hover::before {
-            transform: scaleX(1);
+        .memory-card:hover {
+            transform: scale(1.05);
         }
 
         .memory-card.flipped {
-            background: var(--inifap-blanco);
-            color: var(--inifap-verde-primario);
-            border: 2px solid var(--inifap-verde-primario);
-            transform: rotateY(180deg);
+            background: var(--blanco);
+            color: var(--verde-oscuro);
+            border: 3px solid var(--verde-primario);
         }
 
         .memory-card.matched {
-            background: var(--inifap-dorado);
-            color: #2c3e50;
+            background: linear-gradient(135deg, var(--verde-medio), var(--verde-claro));
+            color: var(--verde-oscuro);
             animation: matchPulse 0.6s ease-out;
         }
 
@@ -296,174 +341,182 @@
             50% { transform: scale(1.1); }
         }
 
+        /* Quiz */
         .quiz-question {
-            background: rgba(15, 123, 15, 0.05);
+            background: rgba(11, 83, 69, 0.08);
             padding: 20px;
             border-radius: 12px;
             margin-bottom: 20px;
-            border-left: 4px solid var(--inifap-dorado);
+            border-left: 4px solid var(--verde-claro);
         }
 
         .quiz-question h4 {
-            color: var(--inifap-verde-primario);
+            color: var(--verde-oscuro);
             margin-bottom: 15px;
-            font-size: 1.1rem;
-        }
-
-        .quiz-options {
-            display: grid;
-            gap: 10px;
+            font-size: 1.15rem;
+            font-weight: 700;
         }
 
         .quiz-option {
-            background: var(--inifap-blanco);
-            border: 2px solid rgba(15, 123, 15, 0.2);
+            background: var(--blanco);
+            border: 2px solid rgba(11, 83, 69, 0.2);
             border-radius: 8px;
-            padding: 12px 16px;
+            padding: 12px 18px;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9rem;
+            margin: 8px 0;
+            font-weight: 500;
         }
 
         .quiz-option:hover {
-            border-color: var(--inifap-verde-primario);
-            background: rgba(15, 123, 15, 0.05);
+            border-color: var(--verde-primario);
+            background: rgba(11, 83, 69, 0.05);
         }
 
         .quiz-option.correct {
-            background: rgba(39, 174, 96, 0.1);
-            border-color: #27ae60;
-            color: #27ae60;
+            background: rgba(22, 160, 133, 0.15);
+            border-color: var(--verde-claro);
+            color: var(--verde-oscuro);
         }
 
         .quiz-option.incorrect {
-            background: rgba(231, 76, 60, 0.1);
+            background: rgba(231, 76, 60, 0.15);
             border-color: #e74c3c;
-            color: #e74c3c;
+            color: #c0392b;
         }
 
-        .sudoku-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            max-width: 240px;
-            margin: 0 auto;
-            padding: 15px;
-            background: var(--inifap-blanco);
+        /* Palabras */
+        .word-display {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--verde-oscuro);
+            margin: 20px 0;
+            letter-spacing: 8px;
+            padding: 20px;
+            background: rgba(11, 83, 69, 0.08);
             border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid var(--verde-claro);
         }
 
-        .sudoku-cell {
-            width: 50px;
-            height: 50px;
-            border: 2px solid rgba(15, 123, 15, 0.3);
-            border-radius: 6px;
+        .word-input {
+            font-size: 1.2rem;
+            padding: 15px 20px;
+            border: 2px solid var(--verde-claro);
+            border-radius: 10px;
+            margin: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--verde-oscuro);
+            background: var(--blanco);
+            width: 300px;
+        }
+
+        /* Cálculos */
+        .calculation-display {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--verde-oscuro);
+            margin: 30px 0;
+            padding: 25px;
+            background: rgba(11, 83, 69, 0.08);
+            border-radius: 15px;
+            border: 3px solid var(--verde-claro);
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .number-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 250px;
+            margin: 20px auto;
+        }
+
+        .number-btn {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--verde-primario), var(--verde-secundario));
+            color: var(--blanco);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px var(--sombra-suave);
+        }
+
+        .number-btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, var(--verde-medio), var(--verde-claro));
+        }
+
+        /* Reflejos */
+        .reaction-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 30px auto;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
             font-weight: 700;
-            color: var(--inifap-verde-primario);
             cursor: pointer;
             transition: all 0.3s ease;
+            background: var(--gris);
+            color: var(--blanco);
         }
 
-        .sudoku-cell:hover {
-            border-color: var(--inifap-verde-primario);
-            background: rgba(15, 123, 15, 0.05);
+        .reaction-circle.active {
+            background: linear-gradient(135deg, var(--verde-medio), var(--verde-claro));
+            color: var(--verde-oscuro);
+            animation: pulse 0.5s ease-out;
         }
 
-        .sudoku-cell.filled {
-            background: var(--inifap-dorado);
-            color: #2c3e50;
+        .reaction-circle.wait {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
         }
 
-        .sudoku-cell.correct {
-            background: rgba(39, 174, 96, 0.2);
-            border-color: #27ae60;
-        }
-
-        .pattern-sequence {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .pattern-item {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .pattern-item.shape {
-            background: var(--inifap-verde-primario);
-            color: var(--inifap-blanco);
-        }
-
-        .pattern-item.number {
-            background: var(--inifap-dorado);
-            color: #2c3e50;
-        }
-
-        .pattern-item.color {
-            background: var(--inifap-tierra);
-            color: var(--inifap-blanco);
-        }
-
-        .pattern-item:hover {
-            transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .game-stats {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(15, 123, 15, 0.05);
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--inifap-verde-primario);
-        }
-
-        .hidden {
-            display: none !important;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         /* Animaciones */
-        @keyframes slideInDown {
-            0% { transform: translateY(-50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        @keyframes slideInUp {
-            0% { transform: translateY(50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
         @keyframes fadeInUp {
             0% { opacity: 0; transform: translateY(30px); }
             100% { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes slideInRight {
+            0% { opacity: 0; transform: translateX(50px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
-            .games-grid {
-                grid-template-columns: 1fr;
+            .sidebar {
+                width: 280px;
+                transform: translateX(-280px);
             }
 
-            .header h1 {
-                font-size: 2rem;
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .welcome-screen h1 {
+                font-size: 2.5rem;
             }
 
             .memory-grid {
@@ -471,358 +524,397 @@
                 max-width: 250px;
             }
 
-            .memory-card {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
+            .word-input {
+                width: 250px;
             }
-
-            .sudoku-grid {
-                max-width: 200px;
-            }
-
-            .sudoku-cell {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-            }
-
-            .pattern-item {
-                width: 40px;
-                height: 40px;
-                font-size: 1.4rem;
-            }
-        }
-
-        .close-games {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, var(--inifap-tierra), #a0522d);
-            color: var(--inifap-blanco);
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
-        }
-
-        .close-games:hover {
-            transform: scale(1.1);
-            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
         }
     </style>
 </head>
 <body>
-    <button class="close-games" onclick="window.close()">×</button>
-
-    <div class="container">
-        <div class="header">
-            <h1>🧠 Juegos de Pensamiento Lógico</h1>
-            <div class="subtitle">Ejercita tu mente mientras esperamos - INIFAP Chiapas</div>
+    <!-- Panel lateral -->
+    <div class="sidebar" id="sidebar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <span id="toggleIcon">‹</span>
+        </button>
+        
+        <div class="sidebar-header">
+            <h2>🌾 INIFAP Chiapas</h2>
+            <p>Juegos de Pensamiento Lógico</p>
         </div>
 
-        <div class="games-grid">
-            <!-- Juego de Memoria Agrícola -->
-            <div class="game-card" onclick="toggleGame('memory-game')">
-                <div class="game-title">🌾 Memoria Agrícola</div>
-                <div class="game-description">
-                    Encuentra las parejas de cultivos y herramientas agrícolas. Un juego clásico con temática del campo chiapaneco.
-                </div>
-                <div class="game-content" id="memory-game">
-                    <div class="game-stats">
-                        <span>Movimientos: <span id="memory-moves">0</span></span>
-                        <span>Parejas: <span id="memory-pairs">0</span>/6</span>
-                        <span>Tiempo: <span id="memory-time">0</span>s</span>
-                    </div>
-                    <div class="memory-grid" id="memory-grid"></div>
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button class="btn" onclick="startMemoryGame()">🎮 Nuevo Juego</button>
-                        <button class="btn btn-secondary" onclick="toggleGame('memory-game')">⬆️ Cerrar</button>
-                    </div>
+        <div class="menu-items">
+            <div class="menu-item" onclick="showGame('memory')">
+                <div class="icon">🧠</div>
+                <div class="text">
+                    <div class="title">Memoria Agrícola</div>
+                    <div class="desc">Encuentra parejas de cultivos</div>
                 </div>
             </div>
 
-            <!-- Quiz de Conocimientos Agrícolas -->
-            <div class="game-card" onclick="toggleGame('quiz-game')">
-                <div class="game-title">🌱 Quiz Agrícola</div>
-                <div class="game-description">
-                    Pon a prueba tus conocimientos sobre agricultura, cultivos y técnicas de campo con preguntas de opción múltiple.
-                </div>
-                <div class="game-content" id="quiz-game">
-                    <div class="game-stats">
-                        <span>Pregunta: <span id="quiz-current">1</span>/5</span>
-                        <span>Correctas: <span id="quiz-correct">0</span></span>
-                        <span>Puntuación: <span id="quiz-score">0</span>%</span>
-                    </div>
-                    <div id="quiz-container"></div>
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button class="btn" onclick="startQuizGame()">🎯 Comenzar Quiz</button>
-                        <button class="btn btn-secondary" onclick="toggleGame('quiz-game')">⬆️ Cerrar</button>
-                    </div>
+            <div class="menu-item" onclick="showGame('quiz')">
+                <div class="icon">🌱</div>
+                <div class="text">
+                    <div class="title">Quiz Agrícola</div>
+                    <div class="desc">Conocimientos del campo</div>
                 </div>
             </div>
 
-            <!-- Sudoku Simple -->
-            <div class="game-card" onclick="toggleGame('sudoku-game')">
-                <div class="game-title">🔢 Sudoku Agrícola 4x4</div>
-                <div class="game-description">
-                    Un sudoku simplificado 4x4 perfecto para ejercitar la lógica mientras esperamos el procesamiento.
-                </div>
-                <div class="game-content" id="sudoku-game">
-                    <div class="game-stats">
-                        <span>Completado: <span id="sudoku-progress">0</span>/16</span>
-                        <span>Errores: <span id="sudoku-errors">0</span></span>
-                    </div>
-                    <div class="sudoku-grid" id="sudoku-grid"></div>
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button class="btn" onclick="startSudokuGame()">🔄 Nuevo Puzzle</button>
-                        <button class="btn btn-secondary" onclick="toggleGame('sudoku-game')">⬆️ Cerrar</button>
-                    </div>
+            <div class="menu-item" onclick="showGame('calculations')">
+                <div class="icon">🔢</div>
+                <div class="text">
+                    <div class="title">Cálculos Rápidos</div>
+                    <div class="desc">Matemáticas agrícolas</div>
                 </div>
             </div>
 
-            <!-- Juego de Secuencias -->
-            <div class="game-card" onclick="toggleGame('pattern-game')">
-                <div class="game-title">🔄 Secuencias Lógicas</div>
-                <div class="game-description">
-                    Completa las secuencias de formas, números y colores. Ejercita tu capacidad de reconocimiento de patrones.
+            <div class="menu-item" onclick="showGame('words')">
+                <div class="icon">📝</div>
+                <div class="text">
+                    <div class="title">Palabras Agrícolas</div>
+                    <div class="desc">Forma palabras del campo</div>
                 </div>
-                <div class="game-content" id="pattern-game">
-                    <div class="game-stats">
-                        <span>Nivel: <span id="pattern-level">1</span></span>
-                        <span>Aciertos: <span id="pattern-correct">0</span></span>
-                        <span>Racha: <span id="pattern-streak">0</span></span>
-                    </div>
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <h4 style="color: var(--inifap-verde-primario); margin-bottom: 15px;">¿Qué sigue en la secuencia?</h4>
-                        <div class="pattern-sequence" id="pattern-sequence"></div>
-                        <div style="margin: 20px 0;">
-                            <p style="color: var(--inifap-gris); margin-bottom: 15px;">Selecciona la opción correcta:</p>
-                            <div class="pattern-sequence" id="pattern-options"></div>
-                        </div>
-                        <div id="pattern-feedback" style="margin-top: 15px; font-weight: 600;"></div>
-                    </div>
-                    <div style="text-align: center;">
-                        <button class="btn" onclick="generateNewPattern()">🎲 Nueva Secuencia</button>
-                        <button class="btn btn-secondary" onclick="toggleGame('pattern-game')">⬆️ Cerrar</button>
-                    </div>
+            </div>
+
+            <div class="menu-item" onclick="showGame('reaction')">
+                <div class="icon">⚡</div>
+                <div class="text">
+                    <div class="title">Reflejos</div>
+                    <div class="desc">Tiempo de reacción</div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Contenido principal -->
+    <div class="main-content" id="mainContent">
+        <!-- Pantalla de bienvenida -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <h1>🧠 Ejercita tu Mente</h1>
+            <p>Bienvenido a los juegos de pensamiento lógico de INIFAP Chiapas. Selecciona un juego del menú lateral para comenzar a ejercitar tu mente mientras procesamos tu información.</p>
+        </div>
+
+        <!-- Juego de Memoria -->
+        <div class="game-area" id="memoryGame">
+            <button class="close-game" onclick="closeGame()">×</button>
+            <div class="game-header">
+                <div class="game-title">🧠 Memoria Agrícola</div>
+                <div class="game-description">Encuentra las parejas de cultivos y herramientas del campo chiapaneco</div>
+            </div>
+            <div class="game-stats">
+                <span>Movimientos: <span id="memoryMoves">0</span></span>
+                <span>Parejas: <span id="memoryPairs">0</span>/6</span>
+                <span>Tiempo: <span id="memoryTime">0</span>s</span>
+            </div>
+            <div class="memory-grid" id="memoryGrid"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="startMemoryGame()">🎮 Nuevo Juego</button>
+            </div>
+        </div>
+
+        <!-- Juego Quiz -->
+        <div class="game-area" id="quizGame">
+            <button class="close-game" onclick="closeGame()">×</button>
+            <div class="game-header">
+                <div class="game-title">🌱 Quiz Agrícola</div>
+                <div class="game-description">Demuestra tus conocimientos sobre agricultura en Chiapas</div>
+            </div>
+            <div class="game-stats">
+                <span>Pregunta: <span id="quizCurrent">1</span>/5</span>
+                <span>Correctas: <span id="quizCorrect">0</span></span>
+                <span>Puntuación: <span id="quizScore">0</span>%</span>
+            </div>
+            <div id="quizContainer"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="startQuizGame()">🎯 Comenzar Quiz</button>
+            </div>
+        </div>
+
+        <!-- Juego de Cálculos -->
+        <div class="game-area" id="calculationsGame">
+            <button class="close-game" onclick="closeGame()">×</button>
+            <div class="game-header">
+                <div class="game-title">🔢 Cálculos Agrícolas Rápidos</div>
+                <div class="game-description">Resuelve operaciones matemáticas relacionadas con la agricultura</div>
+            </div>
+            <div class="game-stats">
+                <span>Nivel: <span id="calcLevel">1</span></span>
+                <span>Correctas: <span id="calcCorrect">0</span></span>
+                <span>Tiempo: <span id="calcTime">30</span>s</span>
+            </div>
+            <div class="calculation-display" id="calcDisplay">Presiona Iniciar</div>
+            <div class="number-pad" id="numberPad"></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="startCalculationGame()">🚀 Iniciar</button>
+                <button class="btn btn-secondary" onclick="clearCalcInput()">🗑️ Limpiar</button>
+                <button class="btn btn-secondary" onclick="submitCalcAnswer()">✓ Enviar</button>
+            </div>
+        </div>
+
+        <!-- Juego de Palabras -->
+        <div class="game-area" id="wordsGame">
+            <button class="close-game" onclick="closeGame()">×</button>
+            <div class="game-header">
+                <div class="game-title">📝 Palabras Agrícolas</div>
+                <div class="game-description">Forma palabras relacionadas con la agricultura usando las letras disponibles</div>
+            </div>
+            <div class="game-stats">
+                <span>Palabras: <span id="wordsFound">0</span></span>
+                <span>Puntos: <span id="wordsScore">0</span></span>
+                <span>Tiempo: <span id="wordsTime">120</span>s</span>
+            </div>
+            <div style="text-align: center; padding: 20px;">
+                <div class="word-display" id="wordLetters">AGRICULTURA</div>
+                <input type="text" class="word-input" id="wordInput" placeholder="Escribe una palabra aquí" 
+                       onkeypress="checkWordInput(event)">
+                <div id="wordFeedback" style="margin: 20px 0; font-size: 1.1rem; font-weight: 600;"></div>
+                <div id="foundWords" style="margin-top: 20px;">
+                    <strong>Palabras encontradas:</strong>
+                    <div id="wordsList" style="margin-top: 10px; font-weight: 500;"></div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="startWordGame()">🎯 Nueva Palabra</button>
+            </div>
+        </div>
+
+        <!-- Juego de Reflejos -->
+        <div class="game-area" id="reactionGame">
+            <button class="close-game" onclick="closeGame()">×</button>
+            <div class="game-header">
+                <div class="game-title">⚡ Test de Reflejos</div>
+                <div class="game-description">Prueba qué tan rápidos son tus reflejos haciendo clic cuando cambie el color</div>
+            </div>
+            <div class="game-stats">
+                <span>Mejor: <span id="reactionBest">0</span>ms</span>
+                <span>Promedio: <span id="reactionAvg">0</span>ms</span>
+                <span>Intentos: <span id="reactionTries">0</span></span>
+            </div>
+            <div style="text-align: center; padding: 40px;">
+                <div class="reaction-circle" id="reactionCircle" onclick="handleReactionClick()">
+                    Haz clic para comenzar
+                </div>
+                <div id="reactionResult" style="margin-top: 20px; font-size: 1.2rem; font-weight: 600;"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Variables globales para los juegos
-        let currentGame = null;
+        let currentGameActive = null;
         let gameTimers = {};
-        
-        // Función para alternar juegos
-        function toggleGame(gameId) {
-            const gameContent = document.getElementById(gameId);
-            const gameCard = gameContent.closest('.game-card');
+        let gameData = {};
+
+        // Funciones generales
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+            const toggleIcon = document.getElementById('toggleIcon');
             
-            // Cerrar otros juegos abiertos
-            document.querySelectorAll('.game-content.active').forEach(content => {
-                if (content.id !== gameId) {
-                    content.classList.remove('active');
-                    content.closest('.game-card').classList.remove('active');
-                }
-            });
-            
-            // Alternar el juego actual
-            if (gameContent.classList.contains('active')) {
-                gameContent.classList.remove('active');
-                gameCard.classList.remove('active');
-                currentGame = null;
-                // Limpiar timers si existen
-                if (gameTimers[gameId]) {
-                    clearInterval(gameTimers[gameId]);
-                    delete gameTimers[gameId];
-                }
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('show');
             } else {
-                gameContent.classList.add('active');
-                gameCard.classList.add('active');
-                currentGame = gameId;
+                sidebar.classList.toggle('collapsed');
+                mainContent.classList.toggle('expanded');
                 
-                // Inicializar el juego si es necesario
-                if (gameId === 'memory-game' && !document.getElementById('memory-grid').children.length) {
-                    initMemoryGame();
-                } else if (gameId === 'quiz-game' && !document.getElementById('quiz-container').children.length) {
-                    initQuizGame();
-                } else if (gameId === 'sudoku-game' && !document.getElementById('sudoku-grid').children.length) {
-                    initSudokuGame();
-                } else if (gameId === 'pattern-game' && !document.getElementById('pattern-sequence').children.length) {
-                    initPatternGame();
+                if (sidebar.classList.contains('collapsed')) {
+                    toggleIcon.textContent = '›';
+                } else {
+                    toggleIcon.textContent = '‹';
                 }
             }
         }
 
-        // ===== JUEGO DE MEMORIA =====
-        const memorySymbols = ['🌽', '🌾', '🚜', '🌱', '🍃', '☀️'];
-        let memoryCards = [];
-        let flippedCards = [];
-        let memoryMoves = 0;
-        let memoryPairs = 0;
-        let memoryStartTime = null;
-
-        function initMemoryGame() {
-            const grid = document.getElementById('memory-grid');
-            const symbols = [...memorySymbols, ...memorySymbols].sort(() => Math.random() - 0.5);
+        function showGame(gameType) {
+            document.getElementById('welcomeScreen').style.display = 'none';
             
-            grid.innerHTML = '';
-            memoryCards = [];
-            
-            symbols.forEach((symbol, index) => {
-                const card = document.createElement('div');
-                card.className = 'memory-card';
-                card.textContent = '?';
-                card.dataset.symbol = symbol;
-                card.dataset.index = index;
-                card.addEventListener('click', flipMemoryCard);
-                grid.appendChild(card);
-                memoryCards.push(card);
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
             });
+            
+            document.querySelectorAll('.game-area').forEach(area => {
+                area.classList.remove('active');
+            });
+            
+            event.currentTarget.classList.add('active');
+            const gameArea = document.getElementById(gameType + 'Game');
+            gameArea.classList.add('active');
+            currentGameActive = gameType;
+
+            // Auto-inicializar algunos juegos
+            if (gameType === 'memory') {
+                setTimeout(startMemoryGame, 500);
+            } else if (gameType === 'quiz') {
+                setTimeout(startQuizGame, 500);
+            } else if (gameType === 'words') {
+                setTimeout(startWordGame, 500);
+            }
         }
 
-        function startMemoryGame() {
-            initMemoryGame();
-            resetMemoryStats();
-            memoryStartTime = Date.now();
+        function closeGame() {
+            // Limpiar timers
+            Object.values(gameTimers).forEach(timer => clearInterval(timer));
+            gameTimers = {};
             
-            // Iniciar timer
-            gameTimers['memory-game'] = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - memoryStartTime) / 1000);
-                document.getElementById('memory-time').textContent = elapsed;
+            document.querySelectorAll('.game-area').forEach(area => {
+                area.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById('welcomeScreen').style.display = 'flex';
+            currentGameActive = null;
+        }
+
+        // JUEGO DE MEMORIA
+        function startMemoryGame() {
+            const symbols = ['🌽', '🍃', '🌾', '🚜', '🌱', '🥕', '🌽', '🍃', '🌾', '🚜', '🌱', '🥕'];
+            const shuffled = symbols.sort(() => Math.random() - 0.5);
+            
+            const grid = document.getElementById('memoryGrid');
+            grid.innerHTML = '';
+            
+            gameData.memory = {
+                cards: shuffled,
+                flipped: [],
+                matched: [],
+                moves: 0,
+                pairs: 0,
+                startTime: Date.now()
+            };
+            
+            shuffled.forEach((symbol, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.index = index;
+                card.dataset.symbol = symbol;
+                card.textContent = '?';
+                card.onclick = () => flipCard(index);
+                grid.appendChild(card);
+            });
+            
+            updateMemoryStats();
+            startMemoryTimer();
+        }
+
+        function flipCard(index) {
+            const card = document.querySelector(`[data-index="${index}"]`);
+            const data = gameData.memory;
+            
+            if (data.flipped.length >= 2 || data.flipped.includes(index) || data.matched.includes(index)) {
+                return;
+            }
+            
+            card.classList.add('flipped');
+            card.textContent = data.cards[index];
+            data.flipped.push(index);
+            
+            if (data.flipped.length === 2) {
+                data.moves++;
+                setTimeout(checkMatch, 800);
+            }
+        }
+
+        function checkMatch() {
+            const data = gameData.memory;
+            const [first, second] = data.flipped;
+            const firstCard = document.querySelector(`[data-index="${first}"]`);
+            const secondCard = document.querySelector(`[data-index="${second}"]`);
+            
+            if (data.cards[first] === data.cards[second]) {
+                firstCard.classList.add('matched');
+                secondCard.classList.add('matched');
+                data.matched.push(first, second);
+                data.pairs++;
+                
+                if (data.pairs === 6) {
+                    clearInterval(gameTimers.memory);
+                    setTimeout(() => alert('¡Felicidades! Completaste el juego'), 500);
+                }
+            } else {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                firstCard.textContent = '?';
+                secondCard.textContent = '?';
+            }
+            
+            data.flipped = [];
+            updateMemoryStats();
+        }
+
+        function startMemoryTimer() {
+            let seconds = 0;
+            gameTimers.memory = setInterval(() => {
+                seconds++;
+                document.getElementById('memoryTime').textContent = seconds;
             }, 1000);
         }
 
-        function resetMemoryStats() {
-            memoryMoves = 0;
-            memoryPairs = 0;
-            document.getElementById('memory-moves').textContent = '0';
-            document.getElementById('memory-pairs').textContent = '0/6';
-            document.getElementById('memory-time').textContent = '0';
+        function updateMemoryStats() {
+            const data = gameData.memory;
+            document.getElementById('memoryMoves').textContent = data.moves;
+            document.getElementById('memoryPairs').textContent = data.pairs;
         }
 
-        function flipMemoryCard(e) {
-            const card = e.target;
-            if (card.classList.contains('flipped') || card.classList.contains('matched') || flippedCards.length === 2) {
-                return;
-            }
-
-            card.classList.add('flipped');
-            card.textContent = card.dataset.symbol;
-            flippedCards.push(card);
-
-            if (flippedCards.length === 2) {
-                memoryMoves++;
-                document.getElementById('memory-moves').textContent = memoryMoves;
-
-                if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
-                    // Pareja encontrada
-                    setTimeout(() => {
-                        flippedCards.forEach(card => {
-                            card.classList.remove('flipped');
-                            card.classList.add('matched');
-                        });
-                        flippedCards = [];
-                        
-                        memoryPairs++;
-                        document.getElementById('memory-pairs').textContent = `${memoryPairs}/6`;
-                        
-                        if (memoryPairs === 6) {
-                            clearInterval(gameTimers['memory-game']);
-                            setTimeout(() => {
-                                alert('¡Felicitaciones! Completaste el juego de memoria. 🎉');
-                            }, 500);
-                        }
-                    }, 600);
-                } else {
-                    // No coinciden
-                    setTimeout(() => {
-                        flippedCards.forEach(card => {
-                            card.classList.remove('flipped');
-                            card.textContent = '?';
-                        });
-                        flippedCards = [];
-                    }, 1000);
-                }
-            }
-        }
-
-        // ===== QUIZ AGRÍCOLA =====
+        // JUEGO QUIZ
         const quizQuestions = [
             {
-                question: "¿Cuál es el cultivo más importante en Chiapas?",
-                options: ["Maíz", "Café", "Cacao", "Frijol"],
+                question: "¿Cuál es el principal cultivo de Chiapas?",
+                options: ["Café", "Maíz", "Frijol", "Cacao"],
+                correct: 0
+            },
+            {
+                question: "¿En qué mes se siembra típicamente el maíz en Chiapas?",
+                options: ["Enero", "Mayo", "Agosto", "Diciembre"],
                 correct: 1
             },
             {
-                question: "¿Qué significa la rotación de cultivos?",
-                options: ["Cambiar la orientación de siembra", "Alternar diferentes cultivos en el mismo terreno", "Rotar las herramientas", "Cambiar de temporada"],
+                question: "¿Qué plaga afecta más al café en Chiapas?",
+                options: ["Gusano cogollero", "Broca del café", "Mosca blanca", "Pulgón"],
                 correct: 1
             },
             {
-                question: "¿Cuál es el pH ideal para la mayoría de cultivos?",
-                options: ["3.0 - 4.0", "6.0 - 7.0", "8.0 - 9.0", "10.0 - 11.0"],
-                correct: 1
-            },
-            {
-                question: "¿Qué nutriente es conocido como el 'motor' del crecimiento?",
-                options: ["Fósforo", "Potasio", "Nitrógeno", "Calcio"],
+                question: "¿Cuál es la mejor época para cosechar café en Chiapas?",
+                options: ["Enero-Marzo", "Mayo-Julio", "Septiembre-Noviembre", "Todo el año"],
                 correct: 2
             },
             {
-                question: "¿En qué época del año se siembra el maíz en Chiapas?",
-                options: ["Diciembre-Enero", "Mayo-Junio", "Septiembre-Octubre", "Marzo-Abril"],
-                correct: 1
+                question: "¿Qué tipo de suelo es mejor para el cacao?",
+                options: ["Arcilloso", "Arenoso", "Franco", "Pedregoso"],
+                correct: 2
             }
         ];
 
-        let currentQuizQuestion = 0;
-        let quizCorrectAnswers = 0;
-
-        function initQuizGame() {
-            currentQuizQuestion = 0;
-            quizCorrectAnswers = 0;
-            updateQuizStats();
-            showQuizQuestion();
-        }
-
         function startQuizGame() {
-            initQuizGame();
-        }
-
-        function updateQuizStats() {
-            document.getElementById('quiz-current').textContent = currentQuizQuestion + 1;
-            document.getElementById('quiz-correct').textContent = quizCorrectAnswers;
-            document.getElementById('quiz-score').textContent = Math.round((quizCorrectAnswers / quizQuestions.length) * 100);
+            gameData.quiz = {
+                currentQuestion: 0,
+                correctAnswers: 0,
+                questions: [...quizQuestions].sort(() => Math.random() - 0.5)
+            };
+            
+            showQuizQuestion();
+            updateQuizStats();
         }
 
         function showQuizQuestion() {
-            const container = document.getElementById('quiz-container');
-            const question = quizQuestions[currentQuizQuestion];
+            const data = gameData.quiz;
+            const container = document.getElementById('quizContainer');
+            const question = data.questions[data.currentQuestion];
             
             container.innerHTML = `
                 <div class="quiz-question">
                     <h4>${question.question}</h4>
-                    <div class="quiz-options">
-                        ${question.options.map((option, index) => 
-                            `<div class="quiz-option" onclick="selectQuizAnswer(${index})">${option}</div>`
-                        ).join('')}
-                    </div>
+                    ${question.options.map((option, index) => 
+                        `<div class="quiz-option" onclick="selectQuizAnswer(${index})">${option}</div>`
+                    ).join('')}
                 </div>
             `;
         }
 
         function selectQuizAnswer(selectedIndex) {
+            const data = gameData.quiz;
+            const question = data.questions[data.currentQuestion];
             const options = document.querySelectorAll('.quiz-option');
-            const question = quizQuestions[currentQuizQuestion];
             
             options.forEach((option, index) => {
                 if (index === question.correct) {
@@ -830,391 +922,362 @@
                 } else if (index === selectedIndex && index !== question.correct) {
                     option.classList.add('incorrect');
                 }
-                option.onclick = null; // Deshabilitar clicks
+                option.onclick = null;
             });
-
+            
             if (selectedIndex === question.correct) {
-                quizCorrectAnswers++;
+                data.correctAnswers++;
             }
-
+            
             setTimeout(() => {
-                currentQuizQuestion++;
-                if (currentQuizQuestion < quizQuestions.length) {
-                    updateQuizStats();
+                data.currentQuestion++;
+                if (data.currentQuestion < data.questions.length) {
                     showQuizQuestion();
                 } else {
-                    // Quiz terminado
-                    updateQuizStats();
-                    const score = Math.round((quizCorrectAnswers / quizQuestions.length) * 100);
-                    document.getElementById('quiz-container').innerHTML = `
-                        <div style="text-align: center; padding: 30px;">
-                            <h3 style="color: var(--inifap-verde-primario); margin-bottom: 15px;">¡Quiz Completado! 🎯</h3>
-                            <p style="font-size: 1.2rem; margin-bottom: 10px;">Puntuación Final: <strong>${score}%</strong></p>
-                            <p style="color: var(--inifap-gris);">Respuestas correctas: ${quizCorrectAnswers} de ${quizQuestions.length}</p>
-                            <button class="btn" onclick="startQuizGame()" style="margin-top: 20px;">🔄 Repetir Quiz</button>
-                        </div>
-                    `;
+                    showQuizResults();
                 }
+                updateQuizStats();
             }, 1500);
         }
 
-        // ===== SUDOKU 4X4 =====
-        let sudokuGrid = [];
-        let sudokuSolution = [];
-        let sudokuErrors = 0;
-
-        function initSudokuGame() {
-            generateSudoku();
-            renderSudoku();
-            updateSudokuStats();
+        function showQuizResults() {
+            const data = gameData.quiz;
+            const percentage = Math.round((data.correctAnswers / data.questions.length) * 100);
+            const container = document.getElementById('quizContainer');
+            
+            container.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <h3>¡Quiz Completado!</h3>
+                    <p>Respuestas correctas: ${data.correctAnswers}/${data.questions.length}</p>
+                    <p>Puntuación: ${percentage}%</p>
+                    <div style="font-size: 2rem; margin: 20px 0;">
+                        ${percentage >= 80 ? '🏆' : percentage >= 60 ? '👍' : '📚'}
+                    </div>
+                </div>
+            `;
         }
 
-        function startSudokuGame() {
-            sudokuErrors = 0;
-            initSudokuGame();
-        }
-
-        function generateSudoku() {
-            // Generar solución válida para 4x4
-            sudokuSolution = [
-                [1, 2, 3, 4],
-                [3, 4, 1, 2],
-                [2, 1, 4, 3],
-                [4, 3, 2, 1]
-            ];
-            
-            // Crear puzzle removiendo algunos números
-            sudokuGrid = sudokuSolution.map(row => [...row]);
-            const cellsToRemove = 8; // Remover 8 celdas para dificultad media
-            
-            for (let i = 0; i < cellsToRemove; i++) {
-                let row, col;
-                do {
-                    row = Math.floor(Math.random() * 4);
-                    col = Math.floor(Math.random() * 4);
-                } while (sudokuGrid[row][col] === 0);
-                
-                sudokuGrid[row][col] = 0;
+        function updateQuizStats() {
+            const data = gameData.quiz;
+            if (data) {
+                document.getElementById('quizCurrent').textContent = Math.min(data.currentQuestion + 1, data.questions.length);
+                document.getElementById('quizCorrect').textContent = data.correctAnswers;
+                document.getElementById('quizScore').textContent = data.questions.length > 0 ? 
+                    Math.round((data.correctAnswers / Math.max(data.currentQuestion, 1)) * 100) : 0;
             }
         }
 
-        function renderSudoku() {
-            const grid = document.getElementById('sudoku-grid');
-            grid.innerHTML = '';
+        // JUEGO DE CÁLCULOS
+        function startCalculationGame() {
+            gameData.calculations = {
+                level: 1,
+                correct: 0,
+                currentAnswer: '',
+                timeLeft: 30,
+                currentProblem: null
+            };
             
-            for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 4; j++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'sudoku-cell';
-                    cell.dataset.row = i;
-                    cell.dataset.col = j;
-                    
-                    if (sudokuGrid[i][j] !== 0) {
-                        cell.textContent = sudokuGrid[i][j];
-                        cell.classList.add('filled');
-                    } else {
-                        cell.addEventListener('click', () => selectSudokuCell(cell));
-                    }
-                    
-                    grid.appendChild(cell);
-                }
+            createNumberPad();
+            generateNewProblem();
+            startCalculationTimer();
+            updateCalculationStats();
+        }
+
+        function createNumberPad() {
+            const pad = document.getElementById('numberPad');
+            pad.innerHTML = '';
+            
+            for (let i = 1; i <= 9; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'number-btn';
+                btn.textContent = i;
+                btn.onclick = () => addToCalcAnswer(i);
+                pad.appendChild(btn);
+            }
+            
+            const zeroBtn = document.createElement('button');
+            zeroBtn.className = 'number-btn';
+            zeroBtn.textContent = '0';
+            zeroBtn.onclick = () => addToCalcAnswer(0);
+            pad.appendChild(zeroBtn);
+        }
+
+        function generateNewProblem() {
+            const data = gameData.calculations;
+            const max = 10 + (data.level * 5);
+            const a = Math.floor(Math.random() * max) + 1;
+            const b = Math.floor(Math.random() * max) + 1;
+            const operations = ['+', '-', '*'];
+            const op = operations[Math.floor(Math.random() * operations.length)];
+            
+            let result;
+            switch (op) {
+                case '+': result = a + b; break;
+                case '-': result = Math.abs(a - b); break;
+                case '*': result = a * b; break;
+            }
+            
+            data.currentProblem = {
+                expression: `${a} ${op} ${b}`,
+                answer: result
+            };
+            
+            data.currentAnswer = '';
+            document.getElementById('calcDisplay').textContent = data.currentProblem.expression + ' = ?';
+        }
+
+        function addToCalcAnswer(digit) {
+            const data = gameData.calculations;
+            data.currentAnswer += digit;
+            document.getElementById('calcDisplay').textContent = 
+                data.currentProblem.expression + ' = ' + data.currentAnswer;
+        }
+
+        function clearCalcInput() {
+            if (gameData.calculations) {
+                gameData.calculations.currentAnswer = '';
+                document.getElementById('calcDisplay').textContent = 
+                    gameData.calculations.currentProblem.expression + ' = ?';
             }
         }
 
-        function selectSudokuCell(cell) {
-            // Mostrar opciones de números
-            const currentNumber = parseInt(cell.textContent) || 0;
-            const nextNumber = (currentNumber % 4) + 1;
+        function submitCalcAnswer() {
+            const data = gameData.calculations;
+            if (!data || !data.currentAnswer) return;
             
-            cell.textContent = nextNumber;
-            
-            const row = parseInt(cell.dataset.row);
-            const col = parseInt(cell.dataset.col);
-            
-            if (nextNumber === sudokuSolution[row][col]) {
-                cell.classList.add('correct');
-                sudokuGrid[row][col] = nextNumber;
-                
-                // Verificar si está completo
-                if (isSudokuComplete()) {
-                    setTimeout(() => {
-                        alert('¡Excelente! Has completado el Sudoku. 🧩');
-                    }, 300);
-                }
+            const userAnswer = parseInt(data.currentAnswer);
+            if (userAnswer === data.currentProblem.answer) {
+                data.correct++;
+                data.level = Math.floor(data.correct / 3) + 1;
+                generateNewProblem();
             } else {
-                cell.classList.remove('correct');
-                sudokuGrid[row][col] = nextNumber;
-                sudokuErrors++;
+                document.getElementById('calcDisplay').textContent = 
+                    `Incorrecto. Era ${data.currentProblem.answer}`;
+                setTimeout(generateNewProblem, 2000);
             }
             
-            updateSudokuStats();
+            updateCalculationStats();
         }
 
-        function isSudokuComplete() {
-            for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 4; j++) {
-                    if (sudokuGrid[i][j] !== sudokuSolution[i][j]) {
-                        return false;
-                    }
+        function startCalculationTimer() {
+            gameTimers.calculations = setInterval(() => {
+                const data = gameData.calculations;
+                data.timeLeft--;
+                document.getElementById('calcTime').textContent = data.timeLeft;
+                
+                if (data.timeLeft <= 0) {
+                    clearInterval(gameTimers.calculations);
+                    document.getElementById('calcDisplay').textContent = 
+                        `¡Tiempo agotado! Correctas: ${data.correct}`;
+                }
+            }, 1000);
+        }
+
+        function updateCalculationStats() {
+            const data = gameData.calculations;
+            if (data) {
+                document.getElementById('calcLevel').textContent = data.level;
+                document.getElementById('calcCorrect').textContent = data.correct;
+            }
+        }
+
+        // JUEGO DE PALABRAS
+        const agricultureWords = [
+            'MAIZ', 'CAFE', 'FRIJOL', 'CACAO', 'ARADO', 'TIERRA', 'AGUA', 'SOL',
+            'CULTIVO', 'COSECHA', 'CAMPO', 'GRANJA', 'SEMILLA', 'PLANTA', 'FRUTO'
+        ];
+
+        const wordBases = ['AGRICULTURA', 'CULTIVO', 'COSECHA', 'PLANTACION'];
+
+        function startWordGame() {
+            const baseWord = wordBases[Math.floor(Math.random() * wordBases.length)];
+            
+            gameData.words = {
+                baseWord: baseWord,
+                foundWords: [],
+                score: 0,
+                timeLeft: 120
+            };
+            
+            document.getElementById('wordLetters').textContent = baseWord;
+            document.getElementById('wordInput').value = '';
+            document.getElementById('wordFeedback').textContent = '';
+            document.getElementById('wordsList').textContent = '';
+            
+            startWordTimer();
+            updateWordStats();
+        }
+
+        function checkWordInput(event) {
+            if (event.key === 'Enter') {
+                const input = event.target.value.toUpperCase().trim();
+                const data = gameData.words;
+                
+                if (input.length < 3) {
+                    showWordFeedback('La palabra debe tener al menos 3 letras', 'red');
+                    return;
+                }
+                
+                if (data.foundWords.includes(input)) {
+                    showWordFeedback('Ya encontraste esta palabra', 'orange');
+                    return;
+                }
+                
+                if (!canMakeWord(input, data.baseWord)) {
+                    showWordFeedback('No puedes formar esta palabra con las letras disponibles', 'red');
+                    return;
+                }
+                
+                if (isValidWord(input)) {
+                    data.foundWords.push(input);
+                    data.score += input.length * 10;
+                    showWordFeedback('¡Palabra correcta! +' + (input.length * 10) + ' puntos', 'green');
+                    updateWordsList();
+                } else {
+                    showWordFeedback('Palabra no válida', 'red');
+                }
+                
+                event.target.value = '';
+                updateWordStats();
+            }
+        }
+
+        function canMakeWord(word, baseWord) {
+            const baseCounts = {};
+            const wordCounts = {};
+            
+            for (let char of baseWord) {
+                baseCounts[char] = (baseCounts[char] || 0) + 1;
+            }
+            
+            for (let char of word) {
+                wordCounts[char] = (wordCounts[char] || 0) + 1;
+            }
+            
+            for (let char in wordCounts) {
+                if (!baseCounts[char] || wordCounts[char] > baseCounts[char]) {
+                    return false;
                 }
             }
+            
             return true;
         }
 
-        function updateSudokuStats() {
-            let filled = 0;
-            for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 4; j++) {
-                    if (sudokuGrid[i][j] !== 0) filled++;
-                }
-            }
-            document.getElementById('sudoku-progress').textContent = filled;
-            document.getElementById('sudoku-errors').textContent = sudokuErrors;
+        function isValidWord(word) {
+            const validWords = [
+                'AGUA', 'ARAR', 'GRANO', 'TIERRA', 'CULTURA', 'RURAL', 'RITUAL',
+                'CRUEL', 'LUNAR', 'ULTRA', 'LUGAR', 'CURA', 'CUAL', 'GULA',
+                'MAIZ', 'CAFE', 'CAMPO', 'COSTA', 'COSA', 'LOCA', 'COLA',
+                'LUCHA', 'CULPA', 'GRUTA', 'ULTRA', 'CULT', 'CUT', 'LUT',
+                'TU', 'LA', 'AL', 'AH', 'GUL'
+            ];
+            return validWords.includes(word) || word.length >= 6;
         }
 
-        // ===== JUEGO DE SECUENCIAS =====
-        let patternLevel = 1;
-        let patternCorrect = 0;
-        let patternStreak = 0;
-        let currentPattern = [];
-        let patternAnswer = null;
-
-        function initPatternGame() {
-            patternLevel = 1;
-            patternCorrect = 0;
-            patternStreak = 0;
-            updatePatternStats();
-            generateNewPattern();
-        }
-
-        function generateNewPattern() {
-            const patterns = {
-                1: generateNumberSequence,
-                2: generateShapeSequence,
-                3: generateColorSequence,
-                4: generateMixedSequence
-            };
-            
-            const patternType = ((patternLevel - 1) % 4) + 1;
-            const result = patterns[patternType]();
-            
-            currentPattern = result.sequence;
-            patternAnswer = result.answer;
-            
-            renderPattern();
-            renderPatternOptions(result.options);
-            
-            document.getElementById('pattern-feedback').textContent = '';
-        }
-
-        function generateNumberSequence() {
-            const start = Math.floor(Math.random() * 5) + 1;
-            const increment = Math.floor(Math.random() * 3) + 1;
-            const sequence = [];
-            
-            for (let i = 0; i < 4; i++) {
-                sequence.push(start + (i * increment));
-            }
-            
-            const answer = start + (4 * increment);
-            const options = [answer];
-            
-            // Generar opciones incorrectas
-            while (options.length < 3) {
-                const wrong = answer + (Math.random() > 0.5 ? Math.floor(Math.random() * 5) + 1 : -(Math.floor(Math.random() * 5) + 1));
-                if (!options.includes(wrong) && wrong > 0) {
-                    options.push(wrong);
-                }
-            }
-            
-            return {
-                sequence: sequence.map(n => ({ type: 'number', value: n })),
-                answer: { type: 'number', value: answer },
-                options: options.sort(() => Math.random() - 0.5).map(n => ({ type: 'number', value: n }))
-            };
-        }
-
-        function generateShapeSequence() {
-            const shapes = ['●', '▲', '■', '♦'];
-            const sequence = [];
-            
-            for (let i = 0; i < 4; i++) {
-                sequence.push(shapes[i % shapes.length]);
-            }
-            
-            const answer = shapes[4 % shapes.length];
-            const options = [answer];
-            
-            // Añadir opciones incorrectas
-            shapes.forEach(shape => {
-                if (!options.includes(shape) && options.length < 3) {
-                    options.push(shape);
-                }
-            });
-            
-            return {
-                sequence: sequence.map(s => ({ type: 'shape', value: s })),
-                answer: { type: 'shape', value: answer },
-                options: options.sort(() => Math.random() - 0.5).map(s => ({ type: 'shape', value: s }))
-            };
-        }
-
-        function generateColorSequence() {
-            const colors = ['🔴', '🟠', '🟡', '🟢'];
-            const sequence = [];
-            
-            for (let i = 0; i < 4; i++) {
-                sequence.push(colors[i % colors.length]);
-            }
-            
-            const answer = colors[4 % colors.length];
-            const options = [answer];
-            
-            // Añadir opciones incorrectas
-            colors.forEach(color => {
-                if (!options.includes(color) && options.length < 3) {
-                    options.push(color);
-                }
-            });
-            
-            return {
-                sequence: sequence.map(c => ({ type: 'color', value: c })),
-                answer: { type: 'color', value: answer },
-                options: options.sort(() => Math.random() - 0.5).map(c => ({ type: 'color', value: c }))
-            };
-        }
-
-        function generateMixedSequence() {
-            // Alternar entre números y formas
-            const sequence = [1, '●', 2, '●'];
-            const answer = 3;
-            const options = [3, 4, '▲'];
-            
-            return {
-                sequence: sequence.map((item, index) => ({
-                    type: typeof item === 'number' ? 'number' : 'shape',
-                    value: item
-                })),
-                answer: { type: 'number', value: answer },
-                options: options.map(item => ({
-                    type: typeof item === 'number' ? 'number' : 'shape',
-                    value: item
-                }))
-            };
-        }
-
-        function renderPattern() {
-            const container = document.getElementById('pattern-sequence');
-            container.innerHTML = '';
-            
-            currentPattern.forEach((item, index) => {
-                const element = document.createElement('div');
-                element.className = `pattern-item ${item.type}`;
-                element.textContent = item.value;
-                container.appendChild(element);
-                
-                // Animación de entrada
-                setTimeout(() => {
-                    element.style.transform = 'scale(1.1)';
-                    setTimeout(() => {
-                        element.style.transform = 'scale(1)';
-                    }, 150);
-                }, index * 200);
-            });
-            
-            // Agregar signo de interrogación
+        function showWordFeedback(message, color) {
+            const feedback = document.getElementById('wordFeedback');
+            feedback.textContent = message;
+            feedback.style.color = color;
             setTimeout(() => {
-                const questionMark = document.createElement('div');
-                questionMark.className = 'pattern-item';
-                questionMark.textContent = '?';
-                questionMark.style.background = 'var(--inifap-gris)';
-                questionMark.style.color = 'var(--inifap-blanco)';
-                container.appendChild(questionMark);
-            }, currentPattern.length * 200);
+                feedback.textContent = '';
+            }, 3000);
         }
 
-        function renderPatternOptions(options) {
-            const container = document.getElementById('pattern-options');
-            container.innerHTML = '';
-            
-            options.forEach((option, index) => {
-                const element = document.createElement('div');
-                element.className = `pattern-item ${option.type}`;
-                element.textContent = option.value;
-                element.style.cursor = 'pointer';
-                element.addEventListener('click', () => selectPatternOption(option, element));
-                container.appendChild(element);
-                
-                // Animación de entrada
-                setTimeout(() => {
-                    element.style.transform = 'scale(1.1)';
-                    setTimeout(() => {
-                        element.style.transform = 'scale(1)';
-                    }, 150);
-                }, (currentPattern.length * 200) + 500 + (index * 100));
-            });
+        function updateWordsList() {
+            const data = gameData.words;
+            const list = document.getElementById('wordsList');
+            list.textContent = data.foundWords.join(', ');
         }
 
-        function selectPatternOption(selectedOption, element) {
-            const feedback = document.getElementById('pattern-feedback');
-            const allOptions = document.querySelectorAll('#pattern-options .pattern-item');
-            
-            // Deshabilitar todas las opciones
-            allOptions.forEach(opt => {
-                opt.style.pointerEvents = 'none';
-            });
-            
-            if (selectedOption.value === patternAnswer.value && selectedOption.type === patternAnswer.type) {
-                // Respuesta correcta
-                element.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
-                element.style.color = 'white';
-                element.style.transform = 'scale(1.2)';
+        function startWordTimer() {
+            gameTimers.words = setInterval(() => {
+                const data = gameData.words;
+                data.timeLeft--;
+                document.getElementById('wordsTime').textContent = data.timeLeft;
                 
-                patternCorrect++;
-                patternStreak++;
-                feedback.textContent = '¡Correcto! 🎉';
-                feedback.style.color = '#27ae60';
-                
-                // Subir nivel cada 3 aciertos
-                if (patternCorrect % 3 === 0) {
-                    patternLevel++;
+                if (data.timeLeft <= 0) {
+                    clearInterval(gameTimers.words);
+                    showWordFeedback('¡Tiempo agotado!', 'red');
                 }
-                
-                setTimeout(() => {
-                    generateNewPattern();
-                }, 1500);
-            } else {
-                // Respuesta incorrecta
-                element.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
-                element.style.color = 'white';
-                element.style.transform = 'scale(0.9)';
-                
-                patternStreak = 0;
-                feedback.textContent = '¡Inténtalo de nuevo! 🤔';
-                feedback.style.color = '#e74c3c';
-                
-                // Mostrar la respuesta correcta
-                allOptions.forEach(opt => {
-                    const optValue = opt.textContent;
-                    if (optValue == patternAnswer.value) {
-                        opt.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
-                        opt.style.color = 'white';
-                    }
-                });
-                
-                setTimeout(() => {
-                    generateNewPattern();
-                }, 2000);
-            }
-            
-            updatePatternStats();
+            }, 1000);
         }
 
-        function updatePatternStats() {
-            document.getElementById('pattern-level').textContent = patternLevel;
-            document.getElementById('pattern-correct').textContent = patternCorrect;
-            document.getElementById('pattern-streak').textContent = patternStreak;
+        function updateWordStats() {
+            const data = gameData.words;
+            if (data) {
+                document.getElementById('wordsFound').textContent = data.foundWords.length;
+                document.getElementById('wordsScore').textContent = data.score;
+            }
         }
+
+        // JUEGO DE REFLEJOS
+        let reactionState = 'waiting';
+        let reactionStartTime = 0;
+        let reactionTimes = [];
+
+        function handleReactionClick() {
+            const circle = document.getElementById('reactionCircle');
+            const result = document.getElementById('reactionResult');
+            
+            switch (reactionState) {
+                case 'waiting':
+                    circle.textContent = 'Espera el verde...';
+                    circle.className = 'reaction-circle wait';
+                    reactionState = 'ready';
+                    
+                    setTimeout(() => {
+                        if (reactionState === 'ready') {
+                            circle.textContent = '¡AHORA!';
+                            circle.className = 'reaction-circle active';
+                            reactionState = 'active';
+                            reactionStartTime = Date.now();
+                        }
+                    }, Math.random() * 3000 + 1000);
+                    break;
+                    
+                case 'ready':
+                    circle.textContent = '¡Muy pronto! Intenta de nuevo';
+                    circle.className = 'reaction-circle';
+                    result.textContent = 'Hiciste clic muy pronto. Espera el verde.';
+                    result.style.color = 'red';
+                    reactionState = 'waiting';
+                    break;
+                    
+                case 'active':
+                    const reactionTime = Date.now() - reactionStartTime;
+                    reactionTimes.push(reactionTime);
+                    
+                    circle.textContent = 'Haz clic para reiniciar';
+                    circle.className = 'reaction-circle';
+                    
+                    const best = Math.min(...reactionTimes);
+                    const avg = Math.round(reactionTimes.reduce((a, b) => a + b) / reactionTimes.length);
+                    
+                    result.textContent = `Tiempo de reacción: ${reactionTime}ms`;
+                    result.style.color = reactionTime < 300 ? 'green' : reactionTime < 500 ? 'orange' : 'red';
+                    
+                    document.getElementById('reactionBest').textContent = best;
+                    document.getElementById('reactionAvg').textContent = avg;
+                    document.getElementById('reactionTries').textContent = reactionTimes.length;
+                    
+                    reactionState = 'waiting';
+                    break;
+            }
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Responsive sidebar
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.add('collapsed');
+            }
+        });
+
+        window.addEventListener('resize', function() {
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('collapsed');
+            }
+        });
     </script>
 </body>
 </html>

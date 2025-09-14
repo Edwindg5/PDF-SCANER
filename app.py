@@ -15,6 +15,11 @@ app.register_blueprint(pdf_bp, url_prefix="/api")
 def index():
     return mostrar_vista_principal_controller()
 
+# Ruta para la página de juegos
+@app.route("/juegos")
+def juegos():
+    return render_template('juegos.html')
+
 # Función para limpieza periódica en segundo plano
 def limpieza_periodica():
     while True:
