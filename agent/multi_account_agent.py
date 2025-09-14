@@ -50,33 +50,59 @@ class MultiAccountAgent:
         return Agent(
             "gemini-2.5-flash",
             system_prompt=(
-                """Eres un extractor de datos de documentos especializado en análisis de suelo. 
-                
-                INSTRUCCIONES IMPORTANTES:
-                1. Extrae TODOS los reportes de análisis de suelo que encuentres en el documento
-                2. Cada hoja/página del PDF puede contener uno o más reportes
-                3. Procesa cada reporte por separado y completo
-                4. Si una página no contiene datos de análisis de suelo, omítela
-                5. Extrae TODA la información disponible para cada reporte siguiendo estrictamente la estructura ReporteAnalisisSuelo
-                6. Si un campo no tiene información, déjalo como cadena vacía ""
-                7. No inventes datos - solo extrae lo que está claramente visible
-                8. Sé muy meticuloso con los valores numéricos y sus unidades
-                
-                FORMATO DE SALIDA:
-                - Devuelve una lista de objetos ReporteAnalisisSuelo
-                - Un objeto por cada reporte encontrado
-                - Incluye TODOS los campos disponibles del modelo
-                
-                CAMPOS CRÍTICOS A EXTRAER:
-                - Información del solicitante (nombre, dirección, teléfono, etc.)
-                - Datos de la muestra (fecha, ubicación, cultivo, etc.)  
-                - Parámetros físicos del suelo (textura, densidad, etc.)
-                - Parámetros químicos (pH, conductividad, materia orgánica, etc.)
-                - Nutrientes y micronutrientes con sus interpretaciones
-                - Relaciones entre cationes
-                
-                Si el documento tiene muchas páginas, procesa cada una cuidadosamente."""
-            ),
+"""Eres un EXTRACTOR LITERAL de datos de documentos PDF de análisis de suelo.
+
+🚨 REGLA ABSOLUTA PARA NÚMEROS: COPIA EXACTA, CARÁCTER POR CARÁCTER 🚨
+
+JAMÁS modifiques un número. Si el PDF muestra "3.20", tu respuesta DEBE ser exactamente "3.20".
+JAMÁS escribas "3.2" si el documento dice "3.20". 
+JAMÁS escribas "8" si el documento dice "8.00".
+JAMÁS escribas "0.8" si el documento dice "0.80".
+
+TRANSCRIPCIÓN LITERAL OBLIGATORIA:
+- "27.59" → escribir "27.59" (NO "27.6", NO "28")
+- "3.20" → escribir "3.20" (NO "3.2", NO "3.200")  
+- "88.25" → escribir "88.25" (NO "88.3", NO "88")
+- "91.45" → escribir "91.45" (NO "91.5", NO "91")
+- "0.31" → escribir "0.31" (NO "0.3", NO ".31")
+- "1.42" → escribir "1.42" (NO "1.4", NO "1.420")
+- "8.00" → escribir "8.00" (NO "8", NO "8.0")
+
+Para RELACIONES ENTRE CATIONES, usa este mapeo FIJO:
+COLUMNA 1 (primera de izquierda) = ca_mg_relacion
+COLUMNA 2 (segunda de izquierda) = mg_k_relacion  
+COLUMNA 3 (tercera de izquierda) = ca_k_relacion
+COLUMNA 4 (cuarta de izquierda) = ca_mg_k_relacion
+COLUMNA 5 (quinta de izquierda) = k_mg_relacion
+
+NO leas las etiquetas de encabezado. Solo cuenta: 1°, 2°, 3°, 4°, 5° columna.
+
+EJEMPLO OBLIGATORIO del PDF:
+Fila 1: Columna1="27.59", Columna2="3.20", Columna3="88.25", Columna4="91.45", Columna5="0.31"
+DEBES asignar: ca_mg_relacion="27.59", mg_k_relacion="3.20", ca_k_relacion="88.25", ca_mg_k_relacion="91.45", k_mg_relacion="0.31"
+
+PROCESO PASO A PASO:
+1. Encuentra tabla "RELACIONES ENTRE CATIONES"
+2. Para cada fila, lee valores de izquierda a derecha
+3. Asigna por POSICIÓN, no por etiqueta:
+   - Valor posición 1 → ca_mg_relacion
+   - Valor posición 2 → mg_k_relacion
+   - Valor posición 3 → ca_k_relacion
+   - Valor posición 4 → ca_mg_k_relacion
+   - Valor posición 5 → k_mg_relacion
+4. COPIA cada número EXACTAMENTE como aparece
+
+VERIFICACIÓN ANTES DE RESPONDER:
+¿Cada número tiene los mismos decimales que en el PDF? SI/NO
+¿Asigné valores por posición y no por etiqueta? SI/NO
+Si alguna respuesta es NO, corrige antes de enviar.
+
+Extrae TODA la información de cada reporte siguiendo el modelo ReporteAnalisisSuelo.
+Si un campo está vacío, usar cadena vacía "".
+NO inventes datos.
+Procesa cada página por separado si tiene múltiples reportes.
+"""
+),
             output_type=List[ReporteAnalisisSuelo]
         )
     
@@ -316,3 +342,5 @@ class MultiAccountAgent:
 
 # Crear instancia global
 multi_agent = MultiAccountAgent()
+
+
