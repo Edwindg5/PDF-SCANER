@@ -15,6 +15,136 @@ import time
 import threading
 import re
 
+
+def obtener_orden_columnas_correcto():
+    """
+    Retorna el orden correcto de las columnas según la estructura del PDF
+    """
+    return [
+        # DATOS DE SOLICITANTE
+        'clave_de_la_muestra',
+        'folio',
+        'nombre',
+        'direccion',
+        'telefono',
+        'municipio',
+        'estado',
+        'colonia',
+        'correo',
+        
+        # DATOS Y CONDICIONES DE LA MUESTRA
+        'estado_de_procedencia',
+        'municipio_muestra',
+        'localidad',
+        'cantidad',
+        'aceptable',
+        'fecha_de_muestreo',
+        'tabla_lote',
+        'profundidad_de_muestreo',
+        'cultivo_anterior',
+        'cultivo_a_establecer',
+        'meta_de_rendimiento',
+        'incorporo_residuos_de_cosecha',
+        'nombre_del_productor',
+        'coordenadas_latitud',
+        'coordenadas_longitud',
+        
+        # PARÁMETROS FÍSICOS DEL SUELO
+        'arcilla',
+        'limo',
+        'arena',
+        'textura',
+        'porcentaje_saturacion',
+        'densidad_aparente_DAP',
+        
+        # PARÁMETROS QUÍMICOS DEL SUELO
+        'ph_agua_suelo',
+        'ph_agua_suelo_interpretacion',
+        'ph_cacl2',
+        'ph_cacl2_interpretacion',
+        'ph_kcl',
+        'ph_kcl_interpretacion',
+        'carbonato_calcio_equivalente',
+        'carbonato_calcio_interpretacion',
+        'conductividad_electrica',
+        'conductividad_electrica_interpretacion',
+        
+        # RESULTADOS DE FERTILIDAD DE SUELO
+        'materia_organica',
+        'materia_organica_interpretacion',
+        'fosforo',
+        'fosforo_interpretacion',
+        'n_inorganico',
+        'n_inorganico_interpretacion',
+        'potasio',
+        'potasio_interpretacion',
+        'calcio',
+        'calcio_interpretacion',
+        'magnesio',
+        'magnesio_interpretacion',
+        'sodio',
+        'sodio_interpretacion',
+        'azufre',
+        'azufre_interpretacion',
+        
+        # CATIONES INTERCAMBIABLES % DE SATURACIÓN
+        'ca_porcentaje',
+        'ca_me_100g',
+        'mg_porcentaje',
+        'mg_me_100g',
+        'k_porcentaje',
+        'k_me_100g',
+        'na_porcentaje',
+        'na_me_100g',
+        'al_porcentaje',
+        'al_me_100g',
+        'h_porcentaje',
+        'h_me_100g',
+        'cic',
+        
+        # MICRONUTRIENTES
+        'hierro',
+        'hierro_interpretacion',
+        'cobre',
+        'cobre_interpretacion',
+        'zinc',
+        'zinc_interpretacion',
+        'manganeso',
+        'manganeso_interpretacion',
+        'boro',
+        'boro_interpretacion',
+        
+        # RELACIONES ENTRE CATIONES
+        'ca_mg_relacion',
+        'ca_mg_interpretacion',
+        'mg_k_relacion',
+        'mg_k_interpretacion',
+        'ca_k_relacion',
+        'ca_k_interpretacion',
+        'ca_mg_k_relacion',
+        'ca_mg_k_interpretacion',
+        'k_mg_relacion',
+        'k_mg_interpretacion'
+    ]
+
+def aplicar_orden_dataframe(df):
+    """
+    Aplica el orden correcto a un DataFrame
+    """
+    orden_columnas = obtener_orden_columnas_correcto()
+    
+    # Solo incluir columnas que existen en el DataFrame
+    columnas_existentes = [col for col in orden_columnas if col in df.columns]
+    
+    # Añadir cualquier columna adicional que no esté en el orden especificado
+    columnas_adicionales = [col for col in df.columns if col not in orden_columnas]
+    
+    # Combinar en el orden final
+    orden_final = columnas_existentes + columnas_adicionales
+    
+    # Reordenar el DataFrame
+    return df[orden_final]
+
 # Directorio donde se guardan los archivos generados
 ARCHIVOS_DIR = os.path.join(os.getcwd(), "archivos_generados")
 # Tiempo de caducidad en segundos (20 minutos)
@@ -223,9 +353,10 @@ def procesar_pdf_controller():
         # Crear Excel y guardarlo en el directorio de archivos
         try:
             df = pd.DataFrame(report_dicts)
+            df = aplicar_orden_dataframe(df)
             ruta_excel = os.path.join(ARCHIVOS_DIR, excel_filename)
             df.to_excel(ruta_excel, index=False)
-            print(f"Archivo Excel guardado: {ruta_excel}")
+            print(f"Archivo Excel guardado con orden correcto: {ruta_excel}")
         except Exception as e:
             return jsonify({"error": f"Error al crear archivo Excel: {str(e)}"}), 500
         
@@ -308,6 +439,7 @@ def mostrar_resultados_controller(nombre_archivo):
         
         # Cargar los datos del Excel
         df = pd.read_excel(ruta_excel)
+        df = aplicar_orden_dataframe(df)
         
         # Obtener los nombres de las columnas
         columnas = df.columns.tolist()
@@ -376,6 +508,7 @@ def descargar_filtrado_controller():
         
         # Crear un DataFrame a partir de los datos filtrados
         df = pd.DataFrame(datos_filtrados)
+        df = aplicar_orden_dataframe(df)
         
         # Generar un nombre de archivo único para el resultado filtrado
         filtrado_filename = generar_nombre_archivo("datos_filtrados", "xlsx")
