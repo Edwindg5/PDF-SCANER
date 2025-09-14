@@ -1,309 +1,757 @@
-//scanner/templates/index.html
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Procesador de PDF</title>
+    <title>Procesador de PDF - INIFAP Chiapas</title>
     <style>
+        :root {
+            --inifap-verde-primario: #0f7b0f;
+            --inifap-verde-secundario: #2d8f2d;
+            --inifap-dorado: #d4af37;
+            --inifap-tierra: #8b4513;
+            --inifap-cielo: #87ceeb;
+            --inifap-blanco: #ffffff;
+            --inifap-gris-claro: #f8f9fa;
+            --inifap-gris: #6c757d;
+            --inifap-sombra: rgba(15, 123, 15, 0.1);
+            --inifap-gradiente-principal: linear-gradient(135deg, var(--inifap-cielo) 0%, var(--inifap-gris-claro) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            color: #333;
-            background-color: #f8f9fa;
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #495057;
-        }
-        #upload-form {
-            border: 1px solid #dee2e6;
-            padding: 25px;
-            border-radius: 4px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        #result {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 4px;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .success {
-            background-color: #e8f5e9;
-            border-left: 4px solid #4caf50;
-        }
-        .error {
-            background-color: #ffebee;
-            border-left: 4px solid #f44336;
-        }
-        button {
-            padding: 10px 16px;
-            background-color: #0056b3;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
-        button:hover {
-            background-color: #004494;
-        }
-        button:disabled {
-            background-color: #a1c4e6;
-            cursor: not-allowed;
-        }
-        .limits-info {
-            margin-top: 15px;
-            font-size: 0.9em;
-            color: #6c757d;
-        }
-        
-        .info-badge {
-            display: inline-block;
-            background-color: #e7f3ff;
-            border: 1px solid #b8daff;
-            color: #0056b3;
-            border-radius: 3px;
-            padding: 3px 8px;
-            font-size: 12px;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-        
-        .info-text {
-            font-size: 0.85em;
-            color: #6c757d;
-            margin-top: 10px;
-        }
-        
-        /* Estilos para el loader empresarial */
-        .processing-container {
-            display: none;
-            margin: 30px auto;
-            padding: 25px;
-            background-color: #fff;
-            border-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
-        }
-        
-        .processing-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .processing-icon {
-            width: 36px;
-            height: 36px;
-            margin-right: 15px;
-        }
-        
-        .processing-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin: 0;
-        }
-        
-        .processing-subtitle {
-            color: #5d6778;
-            margin: 8px 0 20px 0;
-            font-size: 14px;
-        }
-        
-        .progress-container {
-            margin-bottom: 25px;
-        }
-        
-        .progress-bar-container {
-            height: 8px;
-            background-color: #e9ecef;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #0056b3, #428bca);
-            border-radius: 4px;
-            transition: width 0.4s ease;
-        }
-        
-        .progress-status {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #6c757d;
-        }
-        
-        .steps-container {
-            margin-top: 20px;
-        }
-        
-        .step-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 16px;
-            color: #6c757d;
-        }
-        
-        .step-number {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background-color: #e9ecef;
-            color: #6c757d;
+            background: var(--inifap-gradiente-principal);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 12px;
-            font-size: 13px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Elementos decorativos del fondo */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.08'%3E%3Cpath d='M40 40c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm20 0c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            animation: backgroundMove 30s ease-in-out infinite;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230f7b0f' fill-opacity='0.03'%3E%3Cpath d='M50 50c0-2.761-2.239-5-5-5s-5 2.239-5 5 2.239 5 5 5 5-2.239 5-5z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            animation: backgroundMoveReverse 25s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes backgroundMove {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(3deg); }
+        }
+
+        @keyframes backgroundMoveReverse {
+            0%, 100% { transform: translateX(0px) rotate(0deg); }
+            50% { transform: translateX(20px) rotate(-2deg); }
+        }
+
+        .main-container {
+            max-width: 900px;
+            width: 100%;
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header con logo conceptual */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideInDown 1s ease-out;
+        }
+
+        .logo-container {
+            display: inline-block;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .logo-circle {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 15px 40px rgba(15, 123, 15, 0.3);
+            position: relative;
+            overflow: hidden;
+            animation: logoFloat 4s ease-in-out infinite;
+        }
+
+        .logo-circle::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: logoShine 6s linear infinite;
+        }
+
+        .logo-circle .leaf-icon {
+            font-size: 40px;
+            color: var(--inifap-dorado);
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.05); }
+        }
+
+        @keyframes logoShine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .main-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--inifap-verde-primario);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--inifap-gris);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .institution {
+            font-size: 1rem;
+            color: var(--inifap-verde-secundario);
             font-weight: 600;
-            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
-        .step-text {
+
+        /* Formulario principal */
+        #upload-form {
+            background: var(--inifap-blanco);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            border: 1px solid rgba(15, 123, 15, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 1s ease-out 0.3s both;
+        }
+
+        #upload-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--inifap-verde-primario), var(--inifap-dorado), var(--inifap-verde-primario));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: var(--inifap-verde-primario);
+            font-size: 1.1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        label::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--inifap-dorado);
+            border-radius: 2px;
+        }
+
+        #pdf-file {
+            width: 100%;
+            padding: 15px 20px;
+            border: 3px dashed rgba(15, 123, 15, 0.3);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(15, 123, 15, 0.02);
+            cursor: pointer;
+        }
+
+        #pdf-file:hover {
+            border-color: var(--inifap-verde-primario);
+            background: rgba(15, 123, 15, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(15, 123, 15, 0.1);
+        }
+
+        #pdf-file:focus {
+            outline: none;
+            border-color: var(--inifap-verde-primario);
+            box-shadow: 0 0 0 4px rgba(15, 123, 15, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
+            color: var(--inifap-blanco);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(15, 123, 15, 0.3);
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(15, 123, 15, 0.4);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        button:active {
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            background: linear-gradient(135deg, var(--inifap-gris), #95a5a6);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2);
+        }
+
+        .limits-info {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(15, 123, 15, 0.05);
+            border-radius: 12px;
+            border-left: 5px solid var(--inifap-dorado);
+            animation: slideInUp 1s ease-out 0.6s both;
+        }
+
+        .limits-info p {
+            margin-bottom: 12px;
+            color: var(--inifap-verde-primario);
+            font-weight: 600;
+        }
+
+        .limits-info p:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--inifap-dorado), #f4d03f);
+            color: #2c3e50;
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: 10px;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            color: var(--inifap-gris);
+            line-height: 1.6;
+        }
+
+        /* Contenedor de procesamiento mejorado */
+        .processing-container {
+            display: none;
+            margin: 40px auto;
+            padding: 40px;
+            background: var(--inifap-blanco);
+            border-radius: 20px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.15);
+            border: 1px solid rgba(15, 123, 15, 0.1);
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .processing-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--inifap-verde-primario), var(--inifap-dorado), var(--inifap-verde-primario));
+            border-radius: 20px 20px 0 0;
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .processing-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .processing-icon {
+            width: 48px;
+            height: 48px;
+            margin-right: 20px;
+            animation: processingIconSpin 2s ease-in-out infinite;
+        }
+
+        @keyframes processingIconSpin {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(5deg) scale(1.1); }
+        }
+
+        .processing-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--inifap-verde-primario);
+            margin: 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .processing-subtitle {
+            color: var(--inifap-gris);
+            margin: 12px 0 30px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            margin-bottom: 35px;
+        }
+
+        .progress-bar-container {
+            height: 12px;
+            background: rgba(15, 123, 15, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .progress-bar-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: progressShimmer 2s infinite;
+        }
+
+        @keyframes progressShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--inifap-verde-primario), var(--inifap-dorado), var(--inifap-verde-secundario));
+            border-radius: 6px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-status {
+            display: flex;
+            justify-content: space-between;
             font-size: 14px;
-            transition: color 0.3s ease;
+            color: var(--inifap-gris);
+            font-weight: 600;
         }
-        
+
+        .steps-container {
+            margin-top: 30px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: var(--inifap-gris);
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(15, 123, 15, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .step-item:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(15, 123, 15, 0.1);
+            color: var(--inifap-gris);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+        }
+
+        .step-text {
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.4s ease;
+            flex-grow: 1;
+        }
+
         .step-status {
             margin-left: auto;
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: rgba(15, 123, 15, 0.1);
+            color: var(--inifap-gris);
+            transition: all 0.4s ease;
         }
-        
-        /* Estado activo */
+
+        /* Estados de los pasos */
+        .step-item.active {
+            background: rgba(15, 123, 15, 0.05);
+            border-radius: 8px;
+            padding: 16px 12px;
+            margin: 8px 0;
+            transform: translateX(5px);
+        }
+
         .step-item.active .step-number {
-            background-color: #e3f2fd;
-            color: #0056b3;
-            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.2);
+            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
+            color: var(--inifap-blanco);
+            box-shadow: 0 4px 15px rgba(15, 123, 15, 0.3);
+            animation: stepPulse 2s infinite;
         }
-        
+
         .step-item.active .step-text {
-            color: #212529;
-            font-weight: 500;
+            color: var(--inifap-verde-primario);
+            font-weight: 700;
         }
-        
+
         .step-item.active .step-status {
-            color: #0056b3;
+            background: linear-gradient(135deg, var(--inifap-dorado), #f4d03f);
+            color: #2c3e50;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
         }
-        
-        /* Estado completado */
+
         .step-item.completed .step-number {
-            background-color: #0056b3;
-            color: white;
+            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
+            color: var(--inifap-blanco);
+            box-shadow: 0 4px 15px rgba(15, 123, 15, 0.3);
         }
-        
+
         .step-item.completed .step-text {
-            color: #212529;
+            color: var(--inifap-verde-primario);
+            font-weight: 600;
         }
-        
+
         .step-item.completed .step-status {
-            color: #28a745;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: var(--inifap-blanco);
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
         }
-        
+
+        @keyframes stepPulse {
+            0%, 100% { box-shadow: 0 4px 15px rgba(15, 123, 15, 0.3); }
+            50% { box-shadow: 0 4px 25px rgba(15, 123, 15, 0.5); }
+        }
+
         .estimation-text {
             text-align: center;
-            margin-top: 15px;
-            color: #6c757d;
-            font-size: 13px;
+            margin-top: 25px;
+            color: var(--inifap-verde-secundario);
+            font-size: 14px;
+            font-weight: 600;
             font-style: italic;
+            padding: 12px 20px;
+            background: rgba(15, 123, 15, 0.05);
+            border-radius: 20px;
+            border: 1px dashed rgba(15, 123, 15, 0.2);
         }
-        
-        /* Animación para el pulso de procesamiento */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.4); }
-            70% { box-shadow: 0 0 0 8px rgba(0, 86, 179, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 86, 179, 0); }
+
+        /* Resultado */
+        #result {
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            animation: slideInUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
         }
-        
-        .pulse {
-            animation: pulse 2s infinite;
+
+        #result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .success {
+            background: rgba(39, 174, 96, 0.1);
+            border: 1px solid rgba(39, 174, 96, 0.3);
+            color: #27ae60;
+        }
+
+        .success::before {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+
+        .error {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+
+        .error::before {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
+
+        /* Animaciones de entrada */
+        @keyframes slideInDown {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px;
+            }
+
+            .main-title {
+                font-size: 2.2rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            #upload-form {
+                padding: 25px;
+            }
+
+            .processing-container {
+                padding: 25px;
+            }
+
+            .processing-title {
+                font-size: 1.5rem;
+            }
+
+            .step-item {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+
+            .step-number {
+                margin-bottom: 8px;
+                margin-right: 0;
+            }
+
+            .step-status {
+                margin-left: 0;
+                margin-top: 8px;
+            }
+        }
+
+        /* Elementos flotantes decorativos */
+        .floating-element {
+            position: absolute;
+            opacity: 0.1;
+            animation: floatingElements 15s infinite ease-in-out;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: 5s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes floatingElements {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(-10px) rotate(-5deg); }
+            75% { transform: translateY(-30px) rotate(3deg); }
         }
     </style>
 </head>
 <body>
-    <h1>Procesador de PDF</h1>
-    
-    <div id="upload-form">
-        <div class="form-group">
-            <label for="pdf-file">Seleccione un archivo PDF para procesar:</label>
-            <input type="file" id="pdf-file" accept=".pdf" />
+    <!-- Elementos flotantes decorativos -->
+    <div class="floating-element">🌱</div>
+    <div class="floating-element">🌾</div>
+    <div class="floating-element">🍃</div>
+
+    <div class="main-container">
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo-circle">
+                    <div class="leaf-icon">🌱</div>
+                </div>
+            </div>
+            <h1 class="main-title">Procesador de PDF</h1>
+            <div class="subtitle">Sistema de Análisis Agrícola Digital</div>
+            <div class="institution">INIFAP - Chiapas</div>
         </div>
-        <button id="upload-button">Iniciar procesamiento</button>
-        <div class="limits-info">
-            <p><strong>Nota:</strong> El sistema admite archivos PDF con un máximo de 60 páginas.</p>
-            <p class="info-text">La aplicación gestiona automáticamente el almacenamiento y elimina archivos no utilizados después de 10 minutos. <span class="info-badge">Limpieza automática</span></p>
+        
+        <div id="upload-form">
+            <div class="form-group">
+                <label for="pdf-file">📄 Seleccione un archivo PDF para procesar:</label>
+                <input type="file" id="pdf-file" accept=".pdf" />
+            </div>
+            <button id="upload-button">🚀 Iniciar procesamiento</button>
+            <div class="limits-info">
+                <p><strong>📋 Nota:</strong> El sistema admite archivos PDF con un máximo de 60 páginas y el escaneo puede durar como tiempo min. y max.  de 10 a 30 minutos.</p>
+                <p class="info-text">La aplicación gestiona automáticamente el almacenamiento y elimina archivos no utilizados después de 10 minutos. <span class="info-badge">Limpieza automática</span></p>
+            </div>
         </div>
+        
+        <div id="processing-container" class="processing-container">
+            <div class="processing-header">
+                <svg class="processing-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#0f7b0f" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h2 class="processing-title">🔄 Procesando documento</h2>
+            </div>
+            
+            <p class="processing-subtitle" id="processing-message">📊 Analizando contenido del PDF...</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+                <div class="progress-status">
+                    <span>Iniciado</span>
+                    <span id="progress-percentage">0%</span>
+                    <span>Finalizado</span>
+                </div>
+            </div>
+            
+            <div class="steps-container">
+                <div class="step-item" id="step1">
+                    <div class="step-number" id="step1-number">1</div>
+                    <span class="step-text">🔍 Validación del documento</span>
+                    <span class="step-status" id="step1-status">Pendiente</span>
+                </div>
+                <div class="step-item" id="step2">
+                    <div class="step-number" id="step2-number">2</div>
+                    <span class="step-text">📤 Extracción de datos</span>
+                    <span class="step-status" id="step2-status">Pendiente</span>
+                </div>
+                <div class="step-item" id="step3">
+                    <div class="step-number" id="step3-number">3</div>
+                    <span class="step-text">⚙️ Procesamiento de información</span>
+                    <span class="step-status" id="step3-status">Pendiente</span>
+                </div>
+                <div class="step-item" id="step4">
+                    <div class="step-number" id="step4-number">4</div>
+                    <span class="step-text">📋 Generación de resultados</span>
+                    <span class="step-status" id="step4-status">Pendiente</span>
+                </div>
+            </div>
+            
+            <p class="estimation-text" id="estimation-text">⏱️ Tiempo estimado: calculando...</p>
+        </div>
+        
+        <div id="result"></div>
     </div>
-    
-    <div id="processing-container" class="processing-container">
-        <div class="processing-header">
-            <svg class="processing-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#0056b3">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h2 class="processing-title">Procesando documento</h2>
-        </div>
-        
-        <p class="processing-subtitle" id="processing-message">Analizando contenido del PDF...</p>
-        
-        <div class="progress-container">
-            <div class="progress-bar-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            <div class="progress-status">
-                <span>Iniciado</span>
-                <span id="progress-percentage">0%</span>
-                <span>Finalizado</span>
-            </div>
-        </div>
-        
-        <div class="steps-container">
-            <div class="step-item" id="step1">
-                <div class="step-number" id="step1-number">1</div>
-                <span class="step-text">Validación del documento</span>
-                <span class="step-status" id="step1-status">Pendiente</span>
-            </div>
-            <div class="step-item" id="step2">
-                <div class="step-number" id="step2-number">2</div>
-                <span class="step-text">Extracción de datos</span>
-                <span class="step-status" id="step2-status">Pendiente</span>
-            </div>
-            <div class="step-item" id="step3">
-                <div class="step-number" id="step3-number">3</div>
-                <span class="step-text">Procesamiento de información</span>
-                <span class="step-status" id="step3-status">Pendiente</span>
-            </div>
-            <div class="step-item" id="step4">
-                <div class="step-number" id="step4-number">4</div>
-                <span class="step-text">Generación de resultados</span>
-                <span class="step-status" id="step4-status">Pendiente</span>
-            </div>
-        </div>
-        
-        <p class="estimation-text" id="estimation-text">Tiempo estimado: calculando...</p>
-    </div>
-    
-    <div id="result"></div>
     
     <script>
         document.getElementById('upload-button').addEventListener('click', async () => {
@@ -318,7 +766,7 @@
             const uploadForm = document.getElementById('upload-form');
             
             if (!fileInput.files.length) {
-                resultDiv.innerHTML = '<p>Por favor, seleccione un archivo PDF para procesar.</p>';
+                resultDiv.innerHTML = '<p>⚠️ Por favor, seleccione un archivo PDF para procesar.</p>';
                 resultDiv.className = 'error';
                 resultDiv.style.display = 'block';
                 return;
@@ -337,24 +785,24 @@
             
             // Mensajes de procesamiento más profesionales
             const processingMessages = [
-                "Analizando estructura del documento...",
-                "Validando contenido del PDF...",
-                "Extrayendo información relevante...",
-                "Procesando datos estructurados...",
-                "Organizando información extraída...",
-                "Preparando formato de salida...",
-                "Estructurando datos para Excel...",
-                "Finalizando proceso de conversión..."
+                "📊 Analizando estructura del documento...",
+                "🔍 Validando contenido del PDF...",
+                "📤 Extrayendo información relevante...",
+                "⚙️ Procesando datos estructurados...",
+                "🗂️ Organizando información extraída...",
+                "📋 Preparando formato de salida...",
+                "📊 Estructurando datos para Excel...",
+                "✅ Finalizando proceso de conversión..."
             ];
             
             // Estimaciones de tiempo más profesionales
             const estimations = [
-                "Tiempo estimado: calculando...",
-                "Tiempo estimado: 45-60 segundos",
-                "Tiempo estimado: 30-45 segundos",
-                "Tiempo estimado: 15-30 segundos",
-                "Finalizando proceso...",
-                "Completando en breve..."
+                "⏱️ Tiempo estimado: calculando...",
+                "⏱️ Tiempo estimado: 45-60 segundos",
+                "⏱️ Tiempo estimado: 30-45 segundos",
+                "⏱️ Tiempo estimado: 15-30 segundos",
+                "⏰ Finalizando proceso...",
+                "🎯 Completando en breve..."
             ];
             
             // Iniciar simulación de progreso
@@ -438,8 +886,8 @@
                     progress = 100;
                     progressBar.style.width = '100%';
                     progressPercentage.textContent = '100%';
-                    processingMessage.textContent = "Procesamiento completado";
-                    estimationText.textContent = "Redirigiendo a resultados...";
+                    processingMessage.textContent = "✅ Procesamiento completado";
+                    estimationText.textContent = "🎯 Redirigiendo a resultados...";
                     
                     // Esperar datos y mostrar resultado
                     const data = await response.json();
@@ -453,8 +901,8 @@
                         
                         if (response.ok) {
                             resultDiv.innerHTML = `
-                                <p>${data.mensaje}</p>
-                                <p>Redirigiendo a la visualización de resultados...</p>
+                                <p>✅ ${data.mensaje}</p>
+                                <p>🔄 Redirigiendo a la visualización de resultados...</p>
                             `;
                             resultDiv.className = 'success';
                             resultDiv.style.display = 'block';
@@ -469,11 +917,11 @@
                             // Mostrar error
                             if (data.paginas) {
                                 resultDiv.innerHTML = `
-                                    <p>${data.error}</p>
-                                    <p>El documento contiene ${data.paginas} páginas, excediendo el límite de 60 páginas.</p>
+                                    <p>❌ ${data.error}</p>
+                                    <p>📄 El documento contiene ${data.paginas} páginas, excediendo el límite de 60 páginas.</p>
                                 `;
                             } else {
-                                resultDiv.innerHTML = `<p>Error: ${data.error}</p>`;
+                                resultDiv.innerHTML = `<p>❌ Error: ${data.error}</p>`;
                             }
                             resultDiv.className = 'error';
                             resultDiv.style.display = 'block';
@@ -491,7 +939,7 @@
                 uploadForm.style.pointerEvents = 'auto';
                 uploadButton.disabled = false;
                 
-                resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+                resultDiv.innerHTML = `<p>❌ Error: ${error.message}</p>`;
                 resultDiv.className = 'error';
                 resultDiv.style.display = 'block';
             }
@@ -511,13 +959,6 @@
             
             // Actualizar texto de estado
             stepStatus.textContent = statusText;
-            
-            // Aplicar animación si está en proceso
-            if (status === 'active') {
-                stepNumber.classList.add('pulse');
-            } else {
-                stepNumber.classList.remove('pulse');
-            }
             
             // Cambiar el número por un check si está completado
             if (status === 'completed') {

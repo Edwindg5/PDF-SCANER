@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juegos de Pensamiento - INIFAP Chiapas</title>
+    <style>
+        :root {
+            --inifap-verde-primario: #0f7b0f;
+            --inifap-verde-secundario: #2d8f2d;
+            --inifap-dorado: #d4af37;
+            --inifap-tierra: #8b4513;
+            --inifap-cielo: #87ceeb;
+            --inifap-blanco: #ffffff;
+            --inifap-gris-claro: #f8f9fa;
+            --inifap-gris: #6c757d;
+            --inifap-sombra: rgba(15, 123, 15, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--inifap-cielo) 0%, var(--inifap-gris-claro) 100%);
+            min-height: 100vh;
+            color: #333;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Elementos decorativos del fondo */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4af37' fill-opacity='0.05'%3E%3Cpath d='M30 15c0 8.284-6.716 15-15 15s-15-6.716-15-15S6.716 0 15 0s15 6.716 15 15zm15 15c0 8.284-6.716 15-15 15s-15-6.716-15-15 6.716-15 15-15 15 6.716 15 15z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+            animation: float 25s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(3deg); }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
+            color: var(--inifap-blanco);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px var(--inifap-sombra);
+            position: relative;
+            overflow: hidden;
+            animation: slideInDown 1s ease-out;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 120px;
+            height: 120px;
+            background: var(--inifap-dorado);
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: pulse 5s ease-in-out infinite;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 90px;
+            height: 90px;
+            background: var(--inifap-cielo);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: pulse 4s ease-in-out infinite reverse;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 2;
+            font-weight: 500;
+        }
+
+        /* Juegos Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .game-card {
+            background: var(--inifap-blanco);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(15, 123, 15, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--inifap-verde-primario), var(--inifap-dorado), var(--inifap-verde-primario));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(15, 123, 15, 0.15);
+        }
+
+        .game-card.active {
+            border-color: var(--inifap-verde-primario);
+            box-shadow: 0 25px 60px rgba(15, 123, 15, 0.2);
+            transform: scale(1.02);
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--inifap-verde-primario);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .game-description {
+            color: var(--inifap-gris);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        .game-content {
+            display: none;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid rgba(15, 123, 15, 0.1);
+        }
+
+        .game-content.active {
+            display: block;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        /* Botones */
+        .btn {
+            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
+            color: var(--inifap-blanco);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(15, 123, 15, 0.3);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--inifap-gris), #95a5a6);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--inifap-dorado), #f4d03f);
+            color: #2c3e50;
+        }
+
+        /* Juego específicos */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .memory-card {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--inifap-verde-primario), var(--inifap-verde-secundario));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--inifap-blanco);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .memory-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--inifap-dorado);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .memory-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .memory-card.flipped {
+            background: var(--inifap-blanco);
+            color: var(--inifap-verde-primario);
+            border: 2px solid var(--inifap-verde-primario);
+            transform: rotateY(180deg);
+        }
+
+        .memory-card.matched {
+            background: var(--inifap-dorado);
+            color: #2c3e50;
+            animation: matchPulse 0.6s ease-out;
+        }
+
+        @keyframes matchPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .quiz-question {
+            background: rgba(15, 123, 15, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--inifap-dorado);
+        }
+
+        .quiz-question h4 {
+            color: var(--inifap-verde-primario);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            background: var(--inifap-blanco);
+            border: 2px solid rgba(15, 123, 15, 0.2);
+            border-radius: 8px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--inifap-verde-primario);
+            background: rgba(15, 123, 15, 0.05);
+        }
+
+        .quiz-option.correct {
+            background: rgba(39, 174, 96, 0.1);
+            border-color: #27ae60;
+            color: #27ae60;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(231, 76, 60, 0.1);
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            max-width: 240px;
+            margin: 0 auto;
+            padding: 15px;
+            background: var(--inifap-blanco);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .sudoku-cell {
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(15, 123, 15, 0.3);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--inifap-verde-primario);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sudoku-cell:hover {
+            border-color: var(--inifap-verde-primario);
+            background: rgba(15, 123, 15, 0.05);
+        }
+
+        .sudoku-cell.filled {
+            background: var(--inifap-dorado);
+            color: #2c3e50;
+        }
+
+        .sudoku-cell.correct {
+            background: rgba(39, 174, 96, 0.2);
+            border-color: #27ae60;
+        }
+
+        .pattern-sequence {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .pattern-item {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .pattern-item.shape {
+            background: var(--inifap-verde-primario);
+            color: var(--inifap-blanco);
+        }
+
+        .pattern-item.number {
+            background: var(--inifap-dorado);
+            color: #2c3e50;
+        }
+
+        .pattern-item.color {
+            background: var(--inifap-tierra);
+            color: var(--inifap-blanco);
+        }
+
+        .pattern-item:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(15, 123, 15, 0.05);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--inifap-verde-primario);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Animaciones */
+        @keyframes slideInDown {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            0% { transform: translateY(50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .memory-grid {
+                grid-template-columns: repeat(3, 1fr);
+                max-width: 250px;
+            }
+
+            .memory-card {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .sudoku-grid {
+                max-width: 200px;
+            }
+
+            .sudoku-cell {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .pattern-item {
+                width: 40px;
+                height: 40px;
+                font-size: 1.4rem;
+            }
+        }
+
+        .close-games {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--inifap-tierra), #a0522d);
+            color: var(--inifap-blanco);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(139, 69, 19, 0.3);
+        }
+
+        .close-games:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <button class="close-games" onclick="window.close()">×</button>
+
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Juegos de Pensamiento Lógico</h1>
+            <div class="subtitle">Ejercita tu mente mientras esperamos - INIFAP Chiapas</div>
+        </div>
+
+        <div class="games-grid">
+            <!-- Juego de Memoria Agrícola -->
+            <div class="game-card" onclick="toggleGame('memory-game')">
+                <div class="game-title">🌾 Memoria Agrícola</div>
+                <div class="game-description">
+                    Encuentra las parejas de cultivos y herramientas agrícolas. Un juego clásico con temática del campo chiapaneco.
+                </div>
+                <div class="game-content" id="memory-game">
+                    <div class="game-stats">
+                        <span>Movimientos: <span id="memory-moves">0</span></span>
+                        <span>Parejas: <span id="memory-pairs">0</span>/6</span>
+                        <span>Tiempo: <span id="memory-time">0</span>s</span>
+                    </div>
+                    <div class="memory-grid" id="memory-grid"></div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="startMemoryGame()">🎮 Nuevo Juego</button>
+                        <button class="btn btn-secondary" onclick="toggleGame('memory-game')">⬆️ Cerrar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz de Conocimientos Agrícolas -->
+            <div class="game-card" onclick="toggleGame('quiz-game')">
+                <div class="game-title">🌱 Quiz Agrícola</div>
+                <div class="game-description">
+                    Pon a prueba tus conocimientos sobre agricultura, cultivos y técnicas de campo con preguntas de opción múltiple.
+                </div>
+                <div class="game-content" id="quiz-game">
+                    <div class="game-stats">
+                        <span>Pregunta: <span id="quiz-current">1</span>/5</span>
+                        <span>Correctas: <span id="quiz-correct">0</span></span>
+                        <span>Puntuación: <span id="quiz-score">0</span>%</span>
+                    </div>
+                    <div id="quiz-container"></div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="startQuizGame()">🎯 Comenzar Quiz</button>
+                        <button class="btn btn-secondary" onclick="toggleGame('quiz-game')">⬆️ Cerrar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sudoku Simple -->
+            <div class="game-card" onclick="toggleGame('sudoku-game')">
+                <div class="game-title">🔢 Sudoku Agrícola 4x4</div>
+                <div class="game-description">
+                    Un sudoku simplificado 4x4 perfecto para ejercitar la lógica mientras esperamos el procesamiento.
+                </div>
+                <div class="game-content" id="sudoku-game">
+                    <div class="game-stats">
+                        <span>Completado: <span id="sudoku-progress">0</span>/16</span>
+                        <span>Errores: <span id="sudoku-errors">0</span></span>
+                    </div>
+                    <div class="sudoku-grid" id="sudoku-grid"></div>
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="btn" onclick="startSudokuGame()">🔄 Nuevo Puzzle</button>
+                        <button class="btn btn-secondary" onclick="toggleGame('sudoku-game')">⬆️ Cerrar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Juego de Secuencias -->
+            <div class="game-card" onclick="toggleGame('pattern-game')">
+                <div class="game-title">🔄 Secuencias Lógicas</div>
+                <div class="game-description">
+                    Completa las secuencias de formas, números y colores. Ejercita tu capacidad de reconocimiento de patrones.
+                </div>
+                <div class="game-content" id="pattern-game">
+                    <div class="game-stats">
+                        <span>Nivel: <span id="pattern-level">1</span></span>
+                        <span>Aciertos: <span id="pattern-correct">0</span></span>
+                        <span>Racha: <span id="pattern-streak">0</span></span>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <h4 style="color: var(--inifap-verde-primario); margin-bottom: 15px;">¿Qué sigue en la secuencia?</h4>
+                        <div class="pattern-sequence" id="pattern-sequence"></div>
+                        <div style="margin: 20px 0;">
+                            <p style="color: var(--inifap-gris); margin-bottom: 15px;">Selecciona la opción correcta:</p>
+                            <div class="pattern-sequence" id="pattern-options"></div>
+                        </div>
+                        <div id="pattern-feedback" style="margin-top: 15px; font-weight: 600;"></div>
+                    </div>
+                    <div style="text-align: center;">
+                        <button class="btn" onclick="generateNewPattern()">🎲 Nueva Secuencia</button>
+                        <button class="btn btn-secondary" onclick="toggleGame('pattern-game')">⬆️ Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales para los juegos
+        let currentGame = null;
+        let gameTimers = {};
+        
+        // Función para alternar juegos
+        function toggleGame(gameId) {
+            const gameContent = document.getElementById(gameId);
+            const gameCard = gameContent.closest('.game-card');
+            
+            // Cerrar otros juegos abiertos
+            document.querySelectorAll('.game-content.active').forEach(content => {
+                if (content.id !== gameId) {
+                    content.classList.remove('active');
+                    content.closest('.game-card').classList.remove('active');
+                }
+            });
+            
+            // Alternar el juego actual
+            if (gameContent.classList.contains('active')) {
+                gameContent.classList.remove('active');
+                gameCard.classList.remove('active');
+                currentGame = null;
+                // Limpiar timers si existen
+                if (gameTimers[gameId]) {
+                    clearInterval(gameTimers[gameId]);
+                    delete gameTimers[gameId];
+                }
+            } else {
+                gameContent.classList.add('active');
+                gameCard.classList.add('active');
+                currentGame = gameId;
+                
+                // Inicializar el juego si es necesario
+                if (gameId === 'memory-game' && !document.getElementById('memory-grid').children.length) {
+                    initMemoryGame();
+                } else if (gameId === 'quiz-game' && !document.getElementById('quiz-container').children.length) {
+                    initQuizGame();
+                } else if (gameId === 'sudoku-game' && !document.getElementById('sudoku-grid').children.length) {
+                    initSudokuGame();
+                } else if (gameId === 'pattern-game' && !document.getElementById('pattern-sequence').children.length) {
+                    initPatternGame();
+                }
+            }
+        }
+
+        // ===== JUEGO DE MEMORIA =====
+        const memorySymbols = ['🌽', '🌾', '🚜', '🌱', '🍃', '☀️'];
+        let memoryCards = [];
+        let flippedCards = [];
+        let memoryMoves = 0;
+        let memoryPairs = 0;
+        let memoryStartTime = null;
+
+        function initMemoryGame() {
+            const grid = document.getElementById('memory-grid');
+            const symbols = [...memorySymbols, ...memorySymbols].sort(() => Math.random() - 0.5);
+            
+            grid.innerHTML = '';
+            memoryCards = [];
+            
+            symbols.forEach((symbol, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.textContent = '?';
+                card.dataset.symbol = symbol;
+                card.dataset.index = index;
+                card.addEventListener('click', flipMemoryCard);
+                grid.appendChild(card);
+                memoryCards.push(card);
+            });
+        }
+
+        function startMemoryGame() {
+            initMemoryGame();
+            resetMemoryStats();
+            memoryStartTime = Date.now();
+            
+            // Iniciar timer
+            gameTimers['memory-game'] = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - memoryStartTime) / 1000);
+                document.getElementById('memory-time').textContent = elapsed;
+            }, 1000);
+        }
+
+        function resetMemoryStats() {
+            memoryMoves = 0;
+            memoryPairs = 0;
+            document.getElementById('memory-moves').textContent = '0';
+            document.getElementById('memory-pairs').textContent = '0/6';
+            document.getElementById('memory-time').textContent = '0';
+        }
+
+        function flipMemoryCard(e) {
+            const card = e.target;
+            if (card.classList.contains('flipped') || card.classList.contains('matched') || flippedCards.length === 2) {
+                return;
+            }
+
+            card.classList.add('flipped');
+            card.textContent = card.dataset.symbol;
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                memoryMoves++;
+                document.getElementById('memory-moves').textContent = memoryMoves;
+
+                if (flippedCards[0].dataset.symbol === flippedCards[1].dataset.symbol) {
+                    // Pareja encontrada
+                    setTimeout(() => {
+                        flippedCards.forEach(card => {
+                            card.classList.remove('flipped');
+                            card.classList.add('matched');
+                        });
+                        flippedCards = [];
+                        
+                        memoryPairs++;
+                        document.getElementById('memory-pairs').textContent = `${memoryPairs}/6`;
+                        
+                        if (memoryPairs === 6) {
+                            clearInterval(gameTimers['memory-game']);
+                            setTimeout(() => {
+                                alert('¡Felicitaciones! Completaste el juego de memoria. 🎉');
+                            }, 500);
+                        }
+                    }, 600);
+                } else {
+                    // No coinciden
+                    setTimeout(() => {
+                        flippedCards.forEach(card => {
+                            card.classList.remove('flipped');
+                            card.textContent = '?';
+                        });
+                        flippedCards = [];
+                    }, 1000);
+                }
+            }
+        }
+
+        // ===== QUIZ AGRÍCOLA =====
+        const quizQuestions = [
+            {
+                question: "¿Cuál es el cultivo más importante en Chiapas?",
+                options: ["Maíz", "Café", "Cacao", "Frijol"],
+                correct: 1
+            },
+            {
+                question: "¿Qué significa la rotación de cultivos?",
+                options: ["Cambiar la orientación de siembra", "Alternar diferentes cultivos en el mismo terreno", "Rotar las herramientas", "Cambiar de temporada"],
+                correct: 1
+            },
+            {
+                question: "¿Cuál es el pH ideal para la mayoría de cultivos?",
+                options: ["3.0 - 4.0", "6.0 - 7.0", "8.0 - 9.0", "10.0 - 11.0"],
+                correct: 1
+            },
+            {
+                question: "¿Qué nutriente es conocido como el 'motor' del crecimiento?",
+                options: ["Fósforo", "Potasio", "Nitrógeno", "Calcio"],
+                correct: 2
+            },
+            {
+                question: "¿En qué época del año se siembra el maíz en Chiapas?",
+                options: ["Diciembre-Enero", "Mayo-Junio", "Septiembre-Octubre", "Marzo-Abril"],
+                correct: 1
+            }
+        ];
+
+        let currentQuizQuestion = 0;
+        let quizCorrectAnswers = 0;
+
+        function initQuizGame() {
+            currentQuizQuestion = 0;
+            quizCorrectAnswers = 0;
+            updateQuizStats();
+            showQuizQuestion();
+        }
+
+        function startQuizGame() {
+            initQuizGame();
+        }
+
+        function updateQuizStats() {
+            document.getElementById('quiz-current').textContent = currentQuizQuestion + 1;
+            document.getElementById('quiz-correct').textContent = quizCorrectAnswers;
+            document.getElementById('quiz-score').textContent = Math.round((quizCorrectAnswers / quizQuestions.length) * 100);
+        }
+
+        function showQuizQuestion() {
+            const container = document.getElementById('quiz-container');
+            const question = quizQuestions[currentQuizQuestion];
+            
+            container.innerHTML = `
+                <div class="quiz-question">
+                    <h4>${question.question}</h4>
+                    <div class="quiz-options">
+                        ${question.options.map((option, index) => 
+                            `<div class="quiz-option" onclick="selectQuizAnswer(${index})">${option}</div>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function selectQuizAnswer(selectedIndex) {
+            const options = document.querySelectorAll('.quiz-option');
+            const question = quizQuestions[currentQuizQuestion];
+            
+            options.forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.add('correct');
+                } else if (index === selectedIndex && index !== question.correct) {
+                    option.classList.add('incorrect');
+                }
+                option.onclick = null; // Deshabilitar clicks
+            });
+
+            if (selectedIndex === question.correct) {
+                quizCorrectAnswers++;
+            }
+
+            setTimeout(() => {
+                currentQuizQuestion++;
+                if (currentQuizQuestion < quizQuestions.length) {
+                    updateQuizStats();
+                    showQuizQuestion();
+                } else {
+                    // Quiz terminado
+                    updateQuizStats();
+                    const score = Math.round((quizCorrectAnswers / quizQuestions.length) * 100);
+                    document.getElementById('quiz-container').innerHTML = `
+                        <div style="text-align: center; padding: 30px;">
+                            <h3 style="color: var(--inifap-verde-primario); margin-bottom: 15px;">¡Quiz Completado! 🎯</h3>
+                            <p style="font-size: 1.2rem; margin-bottom: 10px;">Puntuación Final: <strong>${score}%</strong></p>
+                            <p style="color: var(--inifap-gris);">Respuestas correctas: ${quizCorrectAnswers} de ${quizQuestions.length}</p>
+                            <button class="btn" onclick="startQuizGame()" style="margin-top: 20px;">🔄 Repetir Quiz</button>
+                        </div>
+                    `;
+                }
+            }, 1500);
+        }
+
+        // ===== SUDOKU 4X4 =====
+        let sudokuGrid = [];
+        let sudokuSolution = [];
+        let sudokuErrors = 0;
+
+        function initSudokuGame() {
+            generateSudoku();
+            renderSudoku();
+            updateSudokuStats();
+        }
+
+        function startSudokuGame() {
+            sudokuErrors = 0;
+            initSudokuGame();
+        }
+
+        function generateSudoku() {
+            // Generar solución válida para 4x4
+            sudokuSolution = [
+                [1, 2, 3, 4],
+                [3, 4, 1, 2],
+                [2, 1, 4, 3],
+                [4, 3, 2, 1]
+            ];
+            
+            // Crear puzzle removiendo algunos números
+            sudokuGrid = sudokuSolution.map(row => [...row]);
+            const cellsToRemove = 8; // Remover 8 celdas para dificultad media
+            
+            for (let i = 0; i < cellsToRemove; i++) {
+                let row, col;
+                do {
+                    row = Math.floor(Math.random() * 4);
+                    col = Math.floor(Math.random() * 4);
+                } while (sudokuGrid[row][col] === 0);
+                
+                sudokuGrid[row][col] = 0;
+            }
+        }
+
+        function renderSudoku() {
+            const grid = document.getElementById('sudoku-grid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sudoku-cell';
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    
+                    if (sudokuGrid[i][j] !== 0) {
+                        cell.textContent = sudokuGrid[i][j];
+                        cell.classList.add('filled');
+                    } else {
+                        cell.addEventListener('click', () => selectSudokuCell(cell));
+                    }
+                    
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function selectSudokuCell(cell) {
+            // Mostrar opciones de números
+            const currentNumber = parseInt(cell.textContent) || 0;
+            const nextNumber = (currentNumber % 4) + 1;
+            
+            cell.textContent = nextNumber;
+            
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+            
+            if (nextNumber === sudokuSolution[row][col]) {
+                cell.classList.add('correct');
+                sudokuGrid[row][col] = nextNumber;
+                
+                // Verificar si está completo
+                if (isSudokuComplete()) {
+                    setTimeout(() => {
+                        alert('¡Excelente! Has completado el Sudoku. 🧩');
+                    }, 300);
+                }
+            } else {
+                cell.classList.remove('correct');
+                sudokuGrid[row][col] = nextNumber;
+                sudokuErrors++;
+            }
+            
+            updateSudokuStats();
+        }
+
+        function isSudokuComplete() {
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (sudokuGrid[i][j] !== sudokuSolution[i][j]) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function updateSudokuStats() {
+            let filled = 0;
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (sudokuGrid[i][j] !== 0) filled++;
+                }
+            }
+            document.getElementById('sudoku-progress').textContent = filled;
+            document.getElementById('sudoku-errors').textContent = sudokuErrors;
+        }
+
+        // ===== JUEGO DE SECUENCIAS =====
+        let patternLevel = 1;
+        let patternCorrect = 0;
+        let patternStreak = 0;
+        let currentPattern = [];
+        let patternAnswer = null;
+
+        function initPatternGame() {
+            patternLevel = 1;
+            patternCorrect = 0;
+            patternStreak = 0;
+            updatePatternStats();
+            generateNewPattern();
+        }
+
+        function generateNewPattern() {
+            const patterns = {
+                1: generateNumberSequence,
+                2: generateShapeSequence,
+                3: generateColorSequence,
+                4: generateMixedSequence
+            };
+            
+            const patternType = ((patternLevel - 1) % 4) + 1;
+            const result = patterns[patternType]();
+            
+            currentPattern = result.sequence;
+            patternAnswer = result.answer;
+            
+            renderPattern();
+            renderPatternOptions(result.options);
+            
+            document.getElementById('pattern-feedback').textContent = '';
+        }
+
+        function generateNumberSequence() {
+            const start = Math.floor(Math.random() * 5) + 1;
+            const increment = Math.floor(Math.random() * 3) + 1;
+            const sequence = [];
+            
+            for (let i = 0; i < 4; i++) {
+                sequence.push(start + (i * increment));
+            }
+            
+            const answer = start + (4 * increment);
+            const options = [answer];
+            
+            // Generar opciones incorrectas
+            while (options.length < 3) {
+                const wrong = answer + (Math.random() > 0.5 ? Math.floor(Math.random() * 5) + 1 : -(Math.floor(Math.random() * 5) + 1));
+                if (!options.includes(wrong) && wrong > 0) {
+                    options.push(wrong);
+                }
+            }
+            
+            return {
+                sequence: sequence.map(n => ({ type: 'number', value: n })),
+                answer: { type: 'number', value: answer },
+                options: options.sort(() => Math.random() - 0.5).map(n => ({ type: 'number', value: n }))
+            };
+        }
+
+        function generateShapeSequence() {
+            const shapes = ['●', '▲', '■', '♦'];
+            const sequence = [];
+            
+            for (let i = 0; i < 4; i++) {
+                sequence.push(shapes[i % shapes.length]);
+            }
+            
+            const answer = shapes[4 % shapes.length];
+            const options = [answer];
+            
+            // Añadir opciones incorrectas
+            shapes.forEach(shape => {
+                if (!options.includes(shape) && options.length < 3) {
+                    options.push(shape);
+                }
+            });
+            
+            return {
+                sequence: sequence.map(s => ({ type: 'shape', value: s })),
+                answer: { type: 'shape', value: answer },
+                options: options.sort(() => Math.random() - 0.5).map(s => ({ type: 'shape', value: s }))
+            };
+        }
+
+        function generateColorSequence() {
+            const colors = ['🔴', '🟠', '🟡', '🟢'];
+            const sequence = [];
+            
+            for (let i = 0; i < 4; i++) {
+                sequence.push(colors[i % colors.length]);
+            }
+            
+            const answer = colors[4 % colors.length];
+            const options = [answer];
+            
+            // Añadir opciones incorrectas
+            colors.forEach(color => {
+                if (!options.includes(color) && options.length < 3) {
+                    options.push(color);
+                }
+            });
+            
+            return {
+                sequence: sequence.map(c => ({ type: 'color', value: c })),
+                answer: { type: 'color', value: answer },
+                options: options.sort(() => Math.random() - 0.5).map(c => ({ type: 'color', value: c }))
+            };
+        }
+
+        function generateMixedSequence() {
+            // Alternar entre números y formas
+            const sequence = [1, '●', 2, '●'];
+            const answer = 3;
+            const options = [3, 4, '▲'];
+            
+            return {
+                sequence: sequence.map((item, index) => ({
+                    type: typeof item === 'number' ? 'number' : 'shape',
+                    value: item
+                })),
+                answer: { type: 'number', value: answer },
+                options: options.map(item => ({
+                    type: typeof item === 'number' ? 'number' : 'shape',
+                    value: item
+                }))
+            };
+        }
+
+        function renderPattern() {
+            const container = document.getElementById('pattern-sequence');
+            container.innerHTML = '';
+            
+            currentPattern.forEach((item, index) => {
+                const element = document.createElement('div');
+                element.className = `pattern-item ${item.type}`;
+                element.textContent = item.value;
+                container.appendChild(element);
+                
+                // Animación de entrada
+                setTimeout(() => {
+                    element.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        element.style.transform = 'scale(1)';
+                    }, 150);
+                }, index * 200);
+            });
+            
+            // Agregar signo de interrogación
+            setTimeout(() => {
+                const questionMark = document.createElement('div');
+                questionMark.className = 'pattern-item';
+                questionMark.textContent = '?';
+                questionMark.style.background = 'var(--inifap-gris)';
+                questionMark.style.color = 'var(--inifap-blanco)';
+                container.appendChild(questionMark);
+            }, currentPattern.length * 200);
+        }
+
+        function renderPatternOptions(options) {
+            const container = document.getElementById('pattern-options');
+            container.innerHTML = '';
+            
+            options.forEach((option, index) => {
+                const element = document.createElement('div');
+                element.className = `pattern-item ${option.type}`;
+                element.textContent = option.value;
+                element.style.cursor = 'pointer';
+                element.addEventListener('click', () => selectPatternOption(option, element));
+                container.appendChild(element);
+                
+                // Animación de entrada
+                setTimeout(() => {
+                    element.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        element.style.transform = 'scale(1)';
+                    }, 150);
+                }, (currentPattern.length * 200) + 500 + (index * 100));
+            });
+        }
+
+        function selectPatternOption(selectedOption, element) {
+            const feedback = document.getElementById('pattern-feedback');
+            const allOptions = document.querySelectorAll('#pattern-options .pattern-item');
+            
+            // Deshabilitar todas las opciones
+            allOptions.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (selectedOption.value === patternAnswer.value && selectedOption.type === patternAnswer.type) {
+                // Respuesta correcta
+                element.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                element.style.color = 'white';
+                element.style.transform = 'scale(1.2)';
+                
+                patternCorrect++;
+                patternStreak++;
+                feedback.textContent = '¡Correcto! 🎉';
+                feedback.style.color = '#27ae60';
+                
+                // Subir nivel cada 3 aciertos
+                if (patternCorrect % 3 === 0) {
+                    patternLevel++;
+                }
+                
+                setTimeout(() => {
+                    generateNewPattern();
+                }, 1500);
+            } else {
+                // Respuesta incorrecta
+                element.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+                element.style.color = 'white';
+                element.style.transform = 'scale(0.9)';
+                
+                patternStreak = 0;
+                feedback.textContent = '¡Inténtalo de nuevo! 🤔';
+                feedback.style.color = '#e74c3c';
+                
+                // Mostrar la respuesta correcta
+                allOptions.forEach(opt => {
+                    const optValue = opt.textContent;
+                    if (optValue == patternAnswer.value) {
+                        opt.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+                        opt.style.color = 'white';
+                    }
+                });
+                
+                setTimeout(() => {
+                    generateNewPattern();
+                }, 2000);
+            }
+            
+            updatePatternStats();
+        }
+
+        function updatePatternStats() {
+            document.getElementById('pattern-level').textContent = patternLevel;
+            document.getElementById('pattern-correct').textContent = patternCorrect;
+            document.getElementById('pattern-streak').textContent = patternStreak;
+        }
+    </script>
+</body>
+</html>
