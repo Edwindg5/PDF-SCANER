@@ -16,6 +16,11 @@
     }
   ],
   "env": {
-    "PYTHONPATH": "scanner"
+    "PYTHONPATH": "scanner:."
+  },
+  "functions": {
+    "scanner/api/index.py": {
+      "includeFiles": "scanner/**"
+    }
   }
 }
