@@ -2,21 +2,18 @@
   "version": 2,
   "builds": [
     {
-      "src": "scanner/api/index.py",
+      "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "15mb",
-        "includeFiles": "scanner/**"
+        "includeFiles": "**"
       }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "scanner/api/index.py"
+      "dest": "api/index.py"
     }
-  ],
-  "env": {
-    "PYTHONPATH": "scanner:."
-  }
+  ]
 }

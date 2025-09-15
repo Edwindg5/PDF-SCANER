@@ -1,4 +1,4 @@
-# scanner/api/index.py
+# api/index.py
 import sys
 import os
 
@@ -41,7 +41,7 @@ except ImportError as e:
     
     @app.route("/")
     def error():
-        return f"Error de importación: {str(e)}<br>Directorio actual: {current_dir}<br>Directorio padre: {parent_dir}"
+        return f"Error de importación: {str(e)}<br>Directorio actual: {current_dir}<br>Directorio padre: {parent_dir}<br>sys.path: {sys.path}"
 
 # Para desarrollo local
 if __name__ == "__main__":
