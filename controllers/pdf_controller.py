@@ -7,7 +7,7 @@ from utils import convertir_reportes_a_json, exportar_dict_a_excel
 import os
 import tempfile
 import PyPDF2
-import pandas as pd
+import openpyxl
 import json
 import io
 import datetime
@@ -127,23 +127,57 @@ def obtener_orden_columnas_correcto():
         'k_mg_interpretacion'
     ]
 
-def aplicar_orden_dataframe(df):
+def aplicar_orden_dataframe(data_list):
     """
-    Aplica el orden correcto a un DataFrame
+    Aplica el orden correcto a una lista de diccionarios (sin pandas)
     """
     orden_columnas = obtener_orden_columnas_correcto()
     
-    # Solo incluir columnas que existen en el DataFrame
-    columnas_existentes = [col for col in orden_columnas if col in df.columns]
+    if not data_list:
+        return data_list
+    
+    # Obtener todas las columnas únicas de todos los diccionarios
+    todas_columnas = set()
+    for item in data_list:
+        todas_columnas.update(item.keys())
+    
+    # Solo incluir columnas que existen en los datos
+    columnas_existentes = [col for col in orden_columnas if col in todas_columnas]
     
     # Añadir cualquier columna adicional que no esté en el orden especificado
-    columnas_adicionales = [col for col in df.columns if col not in orden_columnas]
+    columnas_adicionales = [col for col in todas_columnas if col not in orden_columnas]
     
     # Combinar en el orden final
     orden_final = columnas_existentes + columnas_adicionales
     
-    # Reordenar el DataFrame
-    return df[orden_final]
+    # Reorganizar cada diccionario según el orden
+    data_ordenada = []
+    for item in data_list:
+        item_ordenado = {}
+        for col in orden_final:
+            if col in item:
+                item_ordenado[col] = item[col]
+        data_ordenada.append(item_ordenado)
+    
+    return data_ordenada
+
+def crear_excel_desde_datos(report_dicts, excel_filename):
+    """
+    Crea archivo Excel usando openpyxl en lugar de pandas
+    """
+    ruta_excel = os.path.join(ARCHIVOS_DIR, excel_filename)
+    
+    # Aplicar orden correcto
+    data_ordenada = aplicar_orden_dataframe(report_dicts)
+    
+    # Usar la función de utils que ya tienes
+    excel_buffer = exportar_dict_a_excel(data_ordenada)
+    
+    # Guardar el buffer en archivo
+    with open(ruta_excel, 'wb') as f:
+        f.write(excel_buffer.getvalue())
+    
+    return ruta_excel
 
 # Directorio donde se guardan los archivos generados
 ARCHIVOS_DIR = os.path.join(os.getcwd(), "archivos_generados")
@@ -350,12 +384,9 @@ def procesar_pdf_controller():
         if not crear_directorio_archivos():
             return jsonify({"error": "No se pudo crear el directorio de archivos para guardar los resultados"}), 500
         
-        # Crear Excel y guardarlo en el directorio de archivos
+        # Crear Excel usando openpyxl en lugar de pandas
         try:
-            df = pd.DataFrame(report_dicts)
-            df = aplicar_orden_dataframe(df)
-            ruta_excel = os.path.join(ARCHIVOS_DIR, excel_filename)
-            df.to_excel(ruta_excel, index=False)
+            ruta_excel = crear_excel_desde_datos(report_dicts, excel_filename)
             print(f"Archivo Excel guardado con orden correcto: {ruta_excel}")
         except Exception as e:
             return jsonify({"error": f"Error al crear archivo Excel: {str(e)}"}), 500
@@ -437,15 +468,21 @@ def mostrar_resultados_controller(nombre_archivo):
         if not os.path.exists(ruta_excel):
             return jsonify({"error": "El archivo no existe o ha caducado"}), 404
         
-        # Cargar los datos del Excel
-        df = pd.read_excel(ruta_excel)
-        df = aplicar_orden_dataframe(df)
+        # Cargar los datos del Excel usando openpyxl
+        wb = openpyxl.load_workbook(ruta_excel)
+        ws = wb.active
         
-        # Obtener los nombres de las columnas
-        columnas = df.columns.tolist()
+        # Obtener columnas (primera fila)
+        columnas = [cell.value for cell in ws[1]]
         
-        # Convertir los datos a formato JSON para enviar a la vista
-        datos = df.to_dict(orient='records')
+        # Obtener datos (todas las filas después de la primera)
+        datos = []
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            fila_dict = {}
+            for i, valor in enumerate(row):
+                if i < len(columnas):
+                    fila_dict[columnas[i]] = valor
+            datos.append(fila_dict)
         
         # Ruta al archivo JSON correspondiente (si existe)
         json_filename = nombre_archivo.replace('.xlsx', '.json')
@@ -506,16 +543,12 @@ def descargar_filtrado_controller():
         if not datos_filtrados:
             return jsonify({"error": "No se recibieron datos filtrados"}), 400
         
-        # Crear un DataFrame a partir de los datos filtrados
-        df = pd.DataFrame(datos_filtrados)
-        df = aplicar_orden_dataframe(df)
+        # Aplicar orden correcto a los datos filtrados
+        datos_ordenados = aplicar_orden_dataframe(datos_filtrados)
         
         # Generar un nombre de archivo único para el resultado filtrado
         filtrado_filename = generar_nombre_archivo("datos_filtrados", "xlsx")
-        ruta_filtrado = os.path.join(ARCHIVOS_DIR, filtrado_filename)
-        
-        # Guardar en Excel
-        df.to_excel(ruta_filtrado, index=False)
+        ruta_filtrado = crear_excel_desde_datos(datos_ordenados, filtrado_filename)
         
         # Devolver el archivo para descarga
         return send_file(
