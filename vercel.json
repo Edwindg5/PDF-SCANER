@@ -5,7 +5,8 @@
       "src": "scanner/api/index.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "15mb"
+        "maxLambdaSize": "15mb",
+        "includeFiles": "scanner/**"
       }
     }
   ],
@@ -17,10 +18,5 @@
   ],
   "env": {
     "PYTHONPATH": "scanner:."
-  },
-  "functions": {
-    "scanner/api/index.py": {
-      "includeFiles": "scanner/**"
-    }
   }
 }
