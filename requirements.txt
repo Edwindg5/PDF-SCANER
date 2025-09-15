@@ -3,4 +3,4 @@ python-dotenv==1.1.1
 PyPDF2==3.0.1
 openpyxl==3.1.5
 pydantic==2.11.7
-pydantic-ai-slim==1.0.3
+pydantic-ai-slim[google]==1.0.6
